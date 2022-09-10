@@ -3,27 +3,28 @@ import FolderCard from "../components/common/FolderCard";
 import { FaFileVideo } from "react-icons/fa";
 import { MdOutlineLibraryMusic } from "react-icons/md";
 import { BsFileImageFill, BsFillFileEarmarkArrowUpFill } from "react-icons/bs";
+import DropdownButton from "../components/common/DropdownButton"
 
 let files = [
     {
         name: "Get Started with Typescript.pdf",
         location: "Documents",
         owner: "7MKwk....xsQf67",
-        added: "2022-06-24 11:54PM",
+        added: "2022-06-24",
         size: "8.5 MB"
     },
     {
         name: "Deadpool Full Movies.mkv",
         location: "Videos",
         owner: "7MKwk....xsQf67",
-        added: "2022-09-01 10:12AM",
+        added: "2022-09-01",
         size: "1054 MB"
     },
     {
         name: "IMG-25145551112.png",
         location: "Pictures",
         owner: "7MKwk....xsQf67",
-        added: "2022-07-11 02:36PM",
+        added: "2022-07-11",
         size: "2.3 MB"
     },
 ];
@@ -70,6 +71,9 @@ export default function MyFiles() {
                                 <th scope="col" className="py-3 px-6">
                                     Size
                                 </th>
+                                <th scope="col" className="py-3 px-6">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,14 +94,9 @@ export default function MyFiles() {
                                     <td className="py-4 px-6">{item.owner}</td>
                                     <td className="py-4 px-6">{item.added}</td>
                                     <td className="py-4 px-6">{item.size}</td>
-                                    {/* <td className="py-4 px-6 text-right">
-                                        <a
-                                            href="#"
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                        >
-                                            Share
-                                        </a>
-                                    </td> */}
+                                    <td className="py-4 px-6 text-right">
+                                        <DropdownButton />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
