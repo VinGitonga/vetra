@@ -30,6 +30,7 @@ let files = [
 ];
 
 export default function Dashboard() {
+    
     return (
         <section
             className="bg-white dark:bg-gray-900"

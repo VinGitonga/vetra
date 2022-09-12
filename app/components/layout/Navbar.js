@@ -4,6 +4,7 @@ import { FiUser } from "react-icons/fi";
 import { FaUserCheck } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { useRouter } from "next/router";
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 
 export default function Navbar() {
     const router = useRouter();
@@ -28,7 +29,10 @@ export default function Navbar() {
                 </a>
                 <div className="flex items-center md:order-2">
                     <Menu as="div" className="relative inline-block text-left">
-                        <div className="flex items-center justify-between" >
+                        <div className="flex items-center justify-between">
+                            <div className="mr-2">
+                                <WalletMultiButton />
+                            </div>
                             <Menu.Button className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                                 <img
                                     className="w-12 h-12 rounded-full"

@@ -11,13 +11,23 @@
   "dependencies": {
     "@fontsource/poppins": "^4.5.9",
     "@headlessui/react": "^1.7.0",
+    "@project-serum/anchor": "^0.25.0",
+    "@solana/spl-token": "^0.3.4",
+    "@solana/wallet-adapter-base": "^0.9.16",
+    "@solana/wallet-adapter-react": "^0.15.18",
+    "@solana/wallet-adapter-react-ui": "^0.9.16",
+    "@solana/wallet-adapter-wallets": "^0.18.7",
+    "@solana/web3.js": "^1.60.0",
+    "axios": "^0.27.2",
     "flowbite": "^1.5.3",
     "flowbite-react": "^0.1.10",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-dropzone": "^14.2.2",
-    "react-icons": "^4.4.0"
+    "react-icons": "^4.4.0",
+    "react-moralis": "^1.4.2",
+    "web3.storage": "^4.4.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.8",

@@ -9,13 +9,16 @@ export default function UploadFile({ isOpen, closeModal }) {
     const showDirModal = () => setShow(true);
     const closeDirModal = () => setShow(false);
 
-    const onDrop = useCallback((acceptedFiles) => {
+    
+
+    const onDrop = useCallback(async(acceptedFiles) => {
         console.log(acceptedFiles);
     });
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
     });
+
 
     return (
         <>

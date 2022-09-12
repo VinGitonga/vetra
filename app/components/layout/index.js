@@ -1,7 +1,11 @@
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useEffect } from "react"
 
 export default function Layout({ children }) {
+    const wallet = useWallet()
+
     return (
         <>
             <Navbar />
