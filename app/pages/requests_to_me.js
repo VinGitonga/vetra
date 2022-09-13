@@ -152,6 +152,6 @@ export default function RequestsToMe() {
     );
 }
 
-RequestsToMe.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// RequestsToMe.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };

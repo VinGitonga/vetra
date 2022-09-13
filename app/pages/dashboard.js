@@ -107,6 +107,6 @@ export default function Dashboard() {
     );
 }
 
-Dashboard.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// Dashboard.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };

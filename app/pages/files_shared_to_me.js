@@ -108,6 +108,6 @@ export default function FilesSharedToMe() {
     );
 }
 
-FilesSharedToMe.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// FilesSharedToMe.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };

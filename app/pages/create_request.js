@@ -77,6 +77,6 @@ export default function CreateRequest() {
     );
 }
 
-CreateRequest.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// CreateRequest.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };

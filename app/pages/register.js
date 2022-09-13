@@ -1,7 +1,44 @@
 import PrimaryButton from "../components/common/PrimaryButton";
-
+import { useState, useEffect } from "react";
+import useAuth from "../hooks/useAuth";
+import useToast from "../hooks/useToast";
+import { useRouter } from "next/router";
+import { RiLoginCircleFill } from "react-icons/ri";
 
 export default function Register() {
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [loading, setLoading] = useState(false);
+    const toast = useToast(5000);
+    const router = useRouter();
+
+    const { signup, isAuthenticated, setIsAuthenticated } = useAuth();
+
+    const clickSubmit = async (e) => {
+        e.preventDefault();
+        if (!name || !email) {
+            toast("error", "Please fill all the fields");
+        } else {
+            setLoading(true);
+            await signup(name, email);
+            try {
+                toast("success", "Account created successfully");
+                setIsAuthenticated(true);
+            } catch (err) {
+                console.log(err);
+                toast("error", "An error was encountered");
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            router.push("/dashboard");
+        }
+    }, [isAuthenticated]);
+
     return (
         <>
             <section
@@ -27,6 +64,10 @@ export default function Register() {
                                         type="text"
                                         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                         placeholder="Walt Mich"
+                                        value={name}
+                                        onChange={(e) =>
+                                            setName(e.target.value)
+                                        }
                                     />
                                 </div>
 
@@ -44,11 +85,21 @@ export default function Register() {
                                         type="email"
                                         class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                         placeholder="walt@kovu.com"
+                                        value={email}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
                                     />
                                 </div>
 
                                 <div class="mt-6">
-                                    <PrimaryButton text="Submit" />
+                                    <PrimaryButton
+                                        text="Submit"
+                                        isLoading={loading}
+                                        loadingText={"Saving your info ..."}
+                                        onClick={clickSubmit}
+                                        Icon={RiLoginCircleFill}
+                                    />
                                 </div>
                             </form>
                         </div>

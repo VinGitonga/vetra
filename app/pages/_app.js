@@ -1,19 +1,22 @@
 import "../styles/globals.css";
 import "@fontsource/poppins";
-import dynamic from "next/dynamic";
 import "@solana/wallet-adapter-react-ui/styles.css";
-import {ContextProviderWallet} from "../context/ContextProviderWallet"
+import { ContextProviderWallet } from "../context/ContextProviderWallet";
+import { ToastProvider } from "../context/ToastContext";
+import ToastContainer from "../components/common/ToastContainer";
+import Layout from "../components/layout";
 
 function MyApp({ Component, pageProps }) {
-    // const WalletConnectionProvider = dynamic(
-    //     () => import("../context/WalletConnectionProvider"),
-    //     { ssr: false }
-    // );
-
-    const getLayout = Component.getLayout || ((page) => page);
+    // const getLayout = Component.getLayout || ((page) => page);
     return (
         <ContextProviderWallet>
-            {getLayout(<Component {...pageProps} />)}
+            <ToastProvider>
+                <Layout>
+                    <Component {...pageProps} />
+                    <ToastContainer />
+                </Layout>
+                {/* {getLayout(<Component {...pageProps} />)} */}
+            </ToastProvider>
         </ContextProviderWallet>
     );
 }

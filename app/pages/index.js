@@ -12,6 +12,7 @@ export default function Home() {
             router.push("/dashboard");
         }
     }, [connected]);
+    
 
     return (
         <>
@@ -33,8 +34,8 @@ export default function Home() {
                             </h1>
 
                             <p className="max-w-3xl mx-auto mt-6 text-lg text-center text-gray-700 dark:text-white md:text-xl">
-                                A decentralized cloud platform for all data
-                                storage needs
+                                A decentralized storage service platform for all data
+                                storage needs. Built on Solana Blockchain, Moralis and Web3.Storage.
                             </p>
 
                             <div className="flex flex-col mt-8 space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0">

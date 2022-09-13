@@ -107,6 +107,6 @@ export default function MyFiles() {
     );
 }
 
-MyFiles.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// MyFiles.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };

@@ -97,6 +97,6 @@ export default function ShareTransactions() {
     );
 }
 
-ShareTransactions.getLayout = function getLayout(page) {
-    return <Layout>{page}</Layout>;
-};
+// ShareTransactions.getLayout = function getLayout(page) {
+//     return <Layout>{page}</Layout>;
+// };
