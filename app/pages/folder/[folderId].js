@@ -1,41 +1,43 @@
-import Layout from "../components/layout";
-import FolderCard from "../components/common/FolderCard";
-import { HiFolderOpen } from "react-icons/hi";
-import { FaFileVideo } from "react-icons/fa";
-import { MdOutlineLibraryMusic } from "react-icons/md";
-import { BsFileImageFill } from "react-icons/bs";
+import DropdownButton from "../../components/common/DropdownButton";
 import { useMoralisQuery } from "react-moralis";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useRouter } from "next/router";
 
 let files = [
     {
         name: "Get Started with Typescript.pdf",
         location: "Documents",
         owner: "7MKwk....xsQf67",
-        added: "2022-06-24 11:54PM",
+        added: "2022-06-24",
         size: "8.5 MB",
     },
     {
         name: "Deadpool Full Movies.mkv",
         location: "Videos",
         owner: "7MKwk....xsQf67",
-        added: "2022-09-01 10:12AM",
+        added: "2022-09-01",
         size: "1054 MB",
     },
     {
         name: "IMG-25145551112.png",
         location: "Pictures",
         owner: "7MKwk....xsQf67",
-        added: "2022-07-11 02:36PM",
+        added: "2022-07-11",
         size: "2.3 MB",
     },
 ];
 
-export default function Dashboard() {
-    const wallet = useWallet();
-    const { data } = useMoralisQuery("Folder", (query) =>
-        query.equalTo("ownerAddress", wallet?.publicKey?.toString())
+export default function Folder() {
+    const router = useRouter();
+    const { folderId } = router.query;
+    console.log(folderId)
+
+    const { data: folderInfo } = useMoralisQuery(
+        "Folder",
+        (query) => query.equalTo("objectId", folderId),
+        []
     );
+
+    
 
     return (
         <section
@@ -43,33 +45,11 @@ export default function Dashboard() {
             style={{ fontFamily: "Poppins" }}
         >
             <div className="container px-6 py-3 mx-auto">
-                <h1 className="text-3xl font-semibold text-gray-800 capitalize lg:text-4xl dark:text-white">
-                    Folders
+                <h1 className="text-3xl font-semibold text-gray-800 capitalize lg:text-4xl dark:text-white mb-8">
+                    {folderInfo[0]?.attributes?.displayName || "Folder"}
                 </h1>
-                <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-12 xl:gap-12 md:grid-cols-4">
-                    <FolderCard Icon={HiFolderOpen} title="All Folders" hrefPath={"allfolders"} />
-                    {data.length > 3
-                        ? data
-                              .slice(0, 3)
-                              .map((folder) => (
-                                  <FolderCard
-                                      key={folder.id}
-                                      Icon={BsFileImageFill}
-                                      title={folder.get("displayName")}
-                                      hrefPath={`folder/${folder.id}`}
-                                  />
-                              ))
-                        : data.map((folder) => (
-                              <FolderCard
-                                  key={folder.id}
-                                  Icon={BsFileImageFill}
-                                  title={folder.get("displayName")}
-                                  hrefPath={`folder/${folder.id}`}
-                              />
-                          ))}
-                </div>
                 <h2 className="text-sm font-semibold text-gray-800 capitalize lg:text-xl dark:text-white mt-8 mb-4">
-                    All Files
+                    Files
                 </h2>
 
                 <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
@@ -91,6 +71,9 @@ export default function Dashboard() {
                                 <th scope="col" className="py-3 px-6">
                                     Size
                                 </th>
+                                <th scope="col" className="py-3 px-6">
+                                    Actions
+                                </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -111,14 +94,9 @@ export default function Dashboard() {
                                     <td className="py-4 px-6">{item.owner}</td>
                                     <td className="py-4 px-6">{item.added}</td>
                                     <td className="py-4 px-6">{item.size}</td>
-                                    {/* <td className="py-4 px-6 text-right">
-                                        <a
-                                            href="#"
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                        >
-                                            Share
-                                        </a>
-                                    </td> */}
+                                    <td className="py-4 px-6 text-right">
+                                        <DropdownButton />
+                                    </td>
                                 </tr>
                             ))}
                         </tbody>
@@ -128,7 +106,3 @@ export default function Dashboard() {
         </section>
     );
 }
-
-// Dashboard.getLayout = function getLayout(page) {
-//     return <Layout>{page}</Layout>;
-// };

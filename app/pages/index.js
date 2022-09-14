@@ -1,18 +1,17 @@
-import { useRouter } from "next/router";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 export default function Home() {
-    const router = useRouter();
     const { connected } = useWallet();
+    const router = useRouter();
 
     useEffect(() => {
         if (connected) {
             router.push("/dashboard");
         }
     }, [connected]);
-    
 
     return (
         <>
@@ -34,17 +33,23 @@ export default function Home() {
                             </h1>
 
                             <p className="max-w-3xl mx-auto mt-6 text-lg text-center text-gray-700 dark:text-white md:text-xl">
-                                A decentralized storage service platform for all data
-                                storage needs. Built on Solana Blockchain, Moralis and Web3.Storage.
+                                A decentralized storage service platform for all
+                                data storage needs. Built on Solana Blockchain,
+                                Moralis and Web3.Storage.
                             </p>
 
                             <div className="flex flex-col mt-8 space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0">
                                 <WalletMultiButton />
                                 {/* <button
-                                    onClick={() => router.push("/dashboard")}
+                                    onClick={() =>
+                                        authenticate({ type: "sol" })
+                                    }
+                                    // disabled={isA}
                                     className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:bg-blue-600 focus:outline-none sm:mx-2"
                                 >
-                                    Connect Wallet
+                                    {isAuthenticated
+                                        ? "Proceed to Dashboard"
+                                        : "Get Started"}
                                 </button> */}
                             </div>
                         </div>

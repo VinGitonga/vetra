@@ -11,7 +11,7 @@ import useAuth from "../../hooks/useAuth";
 export default function Navbar() {
     const router = useRouter();
     const wallet = useWallet();
-    const { isAuthenticated, authUser } = useAuth();
+    const { hasAccount, authUser } = useAuth();
     return (
         <nav
             className="bg-white border-gray-200 lg:px-16 sm:px-4 py-2.5 rounded dark:bg-gray-900 sticky top-0 z-50"
@@ -47,7 +47,7 @@ export default function Navbar() {
                                     <img
                                         className="w-12 h-12 rounded-full"
                                         src={`https://avatars.dicebear.com/api/adventurer/${
-                                            isAuthenticated
+                                            hasAccount
                                                 ? authUser?.name
                                                       ?.toLowerCase()
                                                       ?.replaceAll(" ", "")
@@ -59,7 +59,7 @@ export default function Navbar() {
                                     />
                                 </Menu.Button>
                                 <span className="text-lg ml-3 whitespace-nowrap dark:text-white">
-                                    {isAuthenticated
+                                    {hasAccount
                                         ? authUser?.name
                                         : "Bonnie Green"}
                                 </span>

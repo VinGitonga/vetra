@@ -5,6 +5,7 @@ import useToast from "../hooks/useToast";
 import { useRouter } from "next/router";
 import { RiLoginCircleFill } from "react-icons/ri";
 
+
 export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -12,7 +13,7 @@ export default function Register() {
     const toast = useToast(5000);
     const router = useRouter();
 
-    const { signup, isAuthenticated, setIsAuthenticated } = useAuth();
+    const { signup, hasAccount, setHasAccount } = useAuth();
 
     const clickSubmit = async (e) => {
         e.preventDefault();
@@ -23,7 +24,7 @@ export default function Register() {
             await signup(name, email);
             try {
                 toast("success", "Account created successfully");
-                setIsAuthenticated(true);
+                setHasAccount(true);
             } catch (err) {
                 console.log(err);
                 toast("error", "An error was encountered");
@@ -34,10 +35,11 @@ export default function Register() {
     };
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (hasAccount) {
             router.push("/dashboard");
         }
-    }, [isAuthenticated]);
+    }, [hasAccount]);
+
 
     return (
         <>

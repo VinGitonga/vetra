@@ -1,7 +1,33 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
+import useMoralisDB from "../../hooks/useMoralisDB";
+import useToast from "../../hooks/useToast";
+import PrimaryButton from "../common/PrimaryButton";
 
 export default function CreateFolder({ isOpen, closeModal }) {
+    const toast = useToast();
+    const [displayName, setDisplayName] = useState("");
+    const [loading, setLoading] = useState(false);
+    const { createFolder } = useMoralisDB();
+
+    const clickSubmit = (e) => {
+        e.preventDefault();
+        if (!displayName) {
+            toast("error", "Input Folder Name");
+            return;
+        }
+
+        try {
+            createFolder(displayName);
+            setDisplayName("");
+            closeModal();
+        } catch (err) {
+            console.log(err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <>
             <Transition appear show={isOpen} as={Fragment}>
@@ -46,17 +72,28 @@ export default function CreateFolder({ isOpen, closeModal }) {
                                         <input
                                             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                                             placeholder="My Stuff"
+                                            value={displayName}
+                                            onChange={(e) =>
+                                                setDisplayName(e.target.value)
+                                            }
                                             required
                                         />
                                     </div>
 
-                                    <div className="mt-4">
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <PrimaryButton
+                                            text={"Create"}
+                                            isWidthFull={false}
+                                            isLoading={loading}
+                                            loadingText={"Saving Folder ..."}
+                                            onClick={clickSubmit}
+                                        />
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                             onClick={closeModal}
                                         >
-                                            Save
+                                            Close
                                         </button>
                                     </div>
                                 </Dialog.Panel>

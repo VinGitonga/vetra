@@ -6,8 +6,6 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import {
     PhantomWalletAdapter,
     SolflareWalletAdapter,
-    TorusWalletAdapter,
-    GlowWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
 import { useMemo } from "react";
 import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
@@ -23,8 +21,6 @@ const WalletConnectionProvider = ({ children }) => {
     const wallets = useMemo(() => [
         new PhantomWalletAdapter(),
         new SolflareWalletAdapter({ network }),
-        new TorusWalletAdapter(),
-        new GlowWalletAdapter(),
     ]);
 
     return (
