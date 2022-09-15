@@ -23,7 +23,7 @@ export default function Sidebar() {
     return (
         <div className="w-64 h-screen fixed">
             <CreateFolder isOpen={isOpen} closeModal={closeModal} />
-            <UploadFile isOpen={showUpload} closeModal={closeUpload} />
+            <UploadFile isOpen={showUpload} closeModal={closeUpload} setIsOpen={setShowUpload} />
             <button
                 type="button"
                 onClick={openUpload}

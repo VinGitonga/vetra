@@ -1,29 +1,13 @@
 import { Dialog, Transition, RadioGroup } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment } from "react";
 
-const plans = [
-    {
-        name: "Startup",
-        ram: "12GB",
-        cpus: "6 CPUs",
-        disk: "160 GB SSD disk",
-    },
-    {
-        name: "Business",
-        ram: "16GB",
-        cpus: "8 CPUs",
-        disk: "512 GB SSD disk",
-    },
-    {
-        name: "Enterprise",
-        ram: "32GB",
-        cpus: "12 CPUs",
-        disk: "1024 GB SSD disk",
-    },
-];
-
-export default function SelectFolder({ show, closeDirModal }) {
-    const [selected, setSelected] = useState(plans[0])
+export default function SelectFolder({
+    show,
+    closeDirModal,
+    selectedFolder,
+    setSelectedFolder,
+    data,
+}) {
     return (
         <>
             <Transition appear show={show} as={Fragment}>
@@ -65,17 +49,21 @@ export default function SelectFolder({ show, closeDirModal }) {
                                     <div className="w-full px-4 py-6">
                                         <div className="mx-auto w-full max-w-md">
                                             <RadioGroup
-                                                value={selected}
-                                                onChange={setSelected}
+                                                value={selectedFolder}
+                                                onChange={setSelectedFolder}
                                             >
                                                 <RadioGroup.Label className="sr-only">
                                                     Folders
                                                 </RadioGroup.Label>
                                                 <div className="space-y-2">
-                                                    {plans.map((plan) => (
+                                                    {data.map((folder) => (
                                                         <RadioGroup.Option
-                                                            key={plan.name}
-                                                            value={plan}
+                                                            key={
+                                                                folder
+                                                                    ?.attributes
+                                                                    ?.displayName
+                                                            }
+                                                            value={folder}
                                                             className={({
                                                                 active,
                                                                 checked,
@@ -110,7 +98,9 @@ export default function SelectFolder({ show, closeDirModal }) {
                                                                                     }`}
                                                                                 >
                                                                                     {
-                                                                                        plan.name
+                                                                                        folder
+                                                                                            ?.attributes
+                                                                                            ?.displayName
                                                                                     }
                                                                                 </RadioGroup.Label>
                                                                                 <RadioGroup.Description
@@ -122,20 +112,17 @@ export default function SelectFolder({ show, closeDirModal }) {
                                                                                     }`}
                                                                                 >
                                                                                     <span>
-                                                                                        {
-                                                                                            plan.ram
-                                                                                        }
+                                                                                        {folder?.attributes?.createdAt?.toString()}
+
                                                                                         /
-                                                                                        {
-                                                                                            plan.cpus
-                                                                                        }
+                                                                                        {folder?.attributes?.updatedAt?.toString()}
                                                                                     </span>{" "}
                                                                                     <span aria-hidden="true">
                                                                                         &middot;
                                                                                     </span>{" "}
                                                                                     <span>
                                                                                         {
-                                                                                            plan.disk
+                                                                                            folder?.id
                                                                                         }
                                                                                     </span>
                                                                                 </RadioGroup.Description>

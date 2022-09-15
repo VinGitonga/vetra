@@ -9,6 +9,7 @@ import { MoralisProvider } from "react-moralis";
 
 function MyApp({ Component, pageProps }) {
     // const getLayout = Component.getLayout || ((page) => page);
+    console.log(process.env.MORALIS_APP_ID)
     return (
         <ContextProviderWallet>
             <MoralisProvider

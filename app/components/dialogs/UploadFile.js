@@ -1,28 +1,103 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useCallback } from "react";
+import { Fragment, useState, useCallback, useEffect } from "react";
 import SelectFolder from "./SelectFolder";
 import { useDropzone } from "react-dropzone";
+import useStorage from "../../hooks/useStorage";
+import { useWallet } from "@solana/wallet-adapter-react";
+import { useMoralisQuery } from "react-moralis";
+import useToast from "../../hooks/useToast";
+import Badge from "../common/Badge";
+import Progress from "../common/ProgressBar";
+import PrimaryButton from "../common/PrimaryButton";
 
-export default function UploadFile({ isOpen, closeModal }) {
+export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
+    const wallet = useWallet();
+    const toast = useToast(5000);
     const [show, setShow] = useState(false);
+    const [uploadProgress, setUploadProgress] = useState(0);
+    const [msg, setMsg] = useState(null);
+    const [msgType, setMsgType] = useState(null);
+    const [files, setFiles] = useState([]);
+    const [folderId, setFolderId] = useState(null);
+    const [selectedFolder, setSelectedFolder] = useState(null);
+    const [startUpload, setStartUpload] = useState(false);
 
-    const showDirModal = () => setShow(true);
-    const closeDirModal = () => setShow(false);
+    const { uploadFiles } = useStorage(
+        setUploadProgress,
+        files,
+        folderId,
+        setMsg,
+        setMsgType,
+        resetFields
+    );
 
-    
+    const resetFields = () => {
+        setFolderId(null);
+        setFiles([]);
+        setStartUpload(false);
+        setUploadProgress(0);
+    };
 
-    const onDrop = useCallback(async(acceptedFiles) => {
+    const closeDirModal = () => {
+        setFolderId(selectedFolder?.id);
+        setShow(false);
+    };
+
+    const { data } = useMoralisQuery("Folder", (query) =>
+        query.equalTo("ownerAddress", wallet?.publicKey?.toString())
+    );
+
+    const showDirModal = () => {
+        setSelectedFolder(data[0]);
+        setShow(true);
+    };
+
+    console.log(data);
+
+    const onDrop = useCallback(async (acceptedFiles) => {
         console.log(acceptedFiles);
+        setFiles(acceptedFiles);
     });
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
         onDrop,
     });
 
+    const uploadToStorage = () => {
+        if (files.length <= 0) {
+            toast("error", "You haven't selected any file to upload");
+            return;
+        }
+
+        if (!wallet.connected) {
+            toast("error", "Please connected your wallet");
+            return;
+        }
+        setStartUpload(true);
+        uploadFiles();
+    };
+
+    useEffect(() => {
+        if (msg) {
+            toast(msgType, msg);
+        }
+    }, [msg]);
+
+    useEffect(() => {
+        if (msgType === "success") {
+            setIsOpen(false);
+        }
+    }, [msgType]);
 
     return (
         <>
-            <SelectFolder show={show} closeDirModal={closeDirModal} />
+            <SelectFolder
+                show={show}
+                closeDirModal={closeDirModal}
+                selectedFolder={selectedFolder}
+                setSelectedFolder={setSelectedFolder}
+                data={data}
+            />
             <Transition appear show={isOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeModal}>
                     <Transition.Child
@@ -67,7 +142,7 @@ export default function UploadFile({ isOpen, closeModal }) {
                                             <label className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                                 <div className="flex flex-col justify-center items-center pt-5 pb-6">
                                                     <svg
-                                                        aria-hidden="true"
+                                                        ariaHidden="true"
                                                         className="mb-3 w-10 h-10 text-gray-400"
                                                         fill="none"
                                                         stroke="currentColor"
@@ -96,21 +171,71 @@ export default function UploadFile({ isOpen, closeModal }) {
                                                         </p>
                                                     )}
                                                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                                                        SVG, PNG, JPG or GIF
-                                                        (MAX. 800x400px)
+                                                        Any file types except
+                                                        folders
                                                     </p>
                                                 </div>
                                             </label>
                                         </div>
                                     </div>
-
                                     <div className="mt-4">
+                                        {files?.length > 0 ? (
+                                            files?.map((file, i) => (
+                                                <Badge
+                                                    text={file?.name}
+                                                    onClick={() => {
+                                                        let newFiles =
+                                                            files.filter(
+                                                                (_, id) =>
+                                                                    id != i
+                                                            );
+                                                        setFiles(newFiles);
+                                                    }}
+                                                />
+                                            ))
+                                        ) : (
+                                            <p className="text-md text-gray-700 dark:text-gray-400">
+                                                No files selected
+                                            </p>
+                                        )}
+                                    </div>
+
+                                    <div className="mt-4 flex items-center justify-between">
                                         <button
                                             type="button"
                                             className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
                                             onClick={showDirModal}
                                         >
-                                            Select Folder
+                                            Select Folder to Upload Files
+                                        </button>
+                                        <p className="text-md text-gray-700 dark:text-gray-400">
+                                            {selectedFolder
+                                                ? selectedFolder?.attributes
+                                                      ?.displayName
+                                                : "No Folder Selected"}
+                                        </p>
+                                    </div>
+                                    {startUpload && (
+                                        <div className="mt-4">
+                                            <Progress
+                                                title={`Uploading ${files?.length} file(s)`}
+                                                value={uploadProgress}
+                                            />
+                                        </div>
+                                    )}
+
+                                    <div className="mt-4 flex items-center justify-between">
+                                        <PrimaryButton
+                                            text={"Create"}
+                                            isWidthFull={false}
+                                            onClick={uploadToStorage}
+                                        />
+                                        <button
+                                            type="button"
+                                            className="inline-flex justify-center rounded-md border border-transparent bg-blue-100 px-4 py-2 text-sm font-medium text-blue-900 hover:bg-blue-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                                            onClick={closeModal}
+                                        >
+                                            Close
                                         </button>
                                     </div>
                                 </Dialog.Panel>
