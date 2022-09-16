@@ -8,7 +8,9 @@ declare_id!("7MKwk7skNoT7XvVqBah65o8CRQsgfcEuXTkfuNxsQf67");
 const USER_NAME_LENGTH: usize = 50;
 const USER_EMAIL_LENGTH: usize = 100;
 const MAX_REQUEST_MSG_LEN: usize = 1024;
-const DOCUMENT_CID_LEN: usize = 20;
+const DOCUMENT_CID_LEN: usize = 255;
+const FILENAME_LEN: usize = 100;
+const FILE_ID: usize = 20;
 
 #[program]
 pub mod vetra {
@@ -89,7 +91,8 @@ pub mod vetra {
         ctx: Context<CreateReply>,
         msg: String,
         author: String,
-        document_cid: String
+        document_name: String,
+        document_cid: String,
     ) -> Result <()> {
         let request = &mut ctx.accounts.request;
         // get the reply account from context
@@ -98,7 +101,9 @@ pub mod vetra {
         reply.authority = ctx.accounts.authority.key();
         // set the msg
         reply.reply_msg = msg;
-        // set document if any otherwise an empty string
+        // set document name if any otherwise an empty string
+        reply.document_name = document_name;
+        // set document cid if any otherwise an empty string
         reply.document_cid = document_cid;
         // set the author of the reply msg or document
         reply.reply_author = author;
@@ -111,6 +116,30 @@ pub mod vetra {
         request.reply_count += 1;
 
         // return success
+        Ok(())
+    }
+
+    // create a share for a document present in our web3 storage with a wallet address or email address
+    pub fn create_share (
+        ctx: Context<CreateShare>,
+        file_id: String,
+        filename: String,
+        ipfs_path: String,
+        sent_to: String,
+        file_size: u64,
+    ) -> Result<()> {
+        // get share account from context
+        let share = &mut ctx.accounts.share;
+
+        // populate the share account
+        share.owner_address = ctx.accounts.authority.key();
+        share.file_id = file_id;
+        share.filename = filename;
+        share.ipfs_path = ipfs_path;
+        share.sent_to = sent_to;
+        share.file_size = file_size;
+        share.share_time = ctx.accounts.clock.unix_timestamp;
+
         Ok(())
     }
 }
@@ -230,6 +259,32 @@ pub struct CreateReply<'info> {
     pub clock: Sysvar<'info, Clock>,
 }
 
+// Create a new sharing document transaction
+#[derive(Accounts)]
+pub struct CreateShare<'info> {
+    // init new share account
+    #[account(
+        init,
+        seeds = [b"share".as_ref(), authority.key().as_ref()],
+        bump,
+        payer = authority,
+        space = size_of::<ShareAccount>() + FILENAME_LEN + FILE_ID + DOCUMENT_CID_LEN + USER_EMAIL_LENGTH + 8 + 32,
+    )]
+    pub share: Account<'info, ShareAccount>,
+    // authorize transaction
+    #[account(mut)]
+    pub authority: Signer<'info>,
+    // System program
+    pub system_program: Program<'info, System>,
+
+    // save token
+    #[account(constraint = token_program.key == &token::ID)]
+    pub token_program: Program<'info, Token>,
+
+    // take clock for saving  share timestamp
+    pub clock: Sysvar<'info, Clock>,
+}
+
 // State Account
 #[account]
 pub struct StateAccount {
@@ -276,6 +331,8 @@ pub struct ReplyAccount {
     pub authority: Pubkey,
     // msg
     pub reply_msg: String,
+    // document name
+    pub document_name: String,
     // document cid
     pub document_cid: String,
     // author of the msg
@@ -284,4 +341,25 @@ pub struct ReplyAccount {
     pub reply_index: u64,
     // time the reply was made
     pub reply_time: i64,
+}
+
+// Share Account
+// This account describes the share document transaction to either email address or wallet address
+
+#[account]
+pub struct ShareAccount {
+    // owner-address - the owner of the document making the sharing transaction
+    owner_address: Pubkey,
+    // id of the file being shared (usually stored in Web3Storage and its details saved on Moralis Database)
+    file_id: String,
+    // filename - name of file being shared -- usually the same name as that in web3Storage
+    filename: String,
+    // ipfsPath
+    ipfs_path: String,
+    // sent_to : wallet address or email address
+    sent_to: String,
+    // file size
+    file_size: u64,
+    // time the file was sent
+    share_time: i64,
 }

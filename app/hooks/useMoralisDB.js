@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNewMoralisObject, useMoralisQuery } from "react-moralis";
+import { useState } from "react";
+import { useNewMoralisObject } from "react-moralis";
 import useToast from "./useToast";
 import { useWallet } from "@solana/wallet-adapter-react";
 
@@ -8,7 +8,6 @@ const useMoralisDB = () => {
     const [msg, setMsg] = useState("");
     const [msgType, setMsgType] = useState("");
     const { save: saveNewFolder } = useNewMoralisObject("Folder");
-    const { save: saveFile } = useNewMoralisObject("File");
     const wallet = useWallet();
 
     async function createFolder(displayName) {
