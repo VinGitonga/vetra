@@ -6,7 +6,7 @@ import { useMoralisQuery } from "react-moralis";
 
 const anchor = require("@project-serum/anchor");
 const utf8 = anchor.utils.bytes.utf8;
-const { BN, web3 } = anchor;
+const { web3 } = anchor;
 const { SystemProgram } = web3;
 
 const defaultAccount = {
@@ -15,48 +15,84 @@ const defaultAccount = {
     systemProgram: SystemProgram.programId,
 };
 
-const useShare = (file_id) => {
+const useShare = (setMsgType, setMsg) => {
     const wallet = useWallet();
     const connection = new anchor.web3.Connection(SOLANA_HOST);
     const program = getProgramInstance(connection, wallet);
-    const { data: file } = useMoralisQuery("File", (query) =>
-        query.equalTo("objectId", file_id)
-    );
+    
 
     const newFileShare = async (
+        file_id,
         filename,
         ipfs_path,
         sent_to,
         file_size,
-        shareType
     ) => {
-        let [share_pda] = await anchor.web3.PublicKey.findProgramAddress(
-            [utf8.encode("share"), wallet.publicKey.toBuffer()],
+        // init state program derived address to keep track of requests created to make it easier to track requests
+        let [state_pda] = await anchor.web3.PublicKey.findProgramAddress(
+            [utf8.encode("state")],
             program.programId
         );
 
-        await program.rpc.createShare(
-            file_id,
-            filename,
-            ipfs_path,
-            sent_to,
-            new BN(file_size),
+        let stateInfo;
+
+        /**
+         * Check if the state is created or not.
+         * If not create new state
+         */
+
+        try {
+            stateInfo = await program.account.stateAccount.fetch(state_pda);
+            console.log(stateInfo);
+        } catch {
+            await program.rpc.createState({
+                accounts: {
+                    state: state_pda,
+                    authority: wallet.publicKey,
+                    ...defaultAccount,
+                },
+            });
+            return;
+        }
+
+        // refetch pda since we are sure an actual state account exists
+        stateInfo = await program.account.stateAccount.fetch(state_pda);
+
+        let [share_pda] = await anchor.web3.PublicKey.findProgramAddress(
+            [
+                utf8.encode("share"),
+                stateInfo.shareCount.toArrayLike(Buffer, "be", 8),
+            ],
+            program.programId
+        );
+
+        const tx = await program.rpc.createShare(
+            String(file_id),
+            String(filename),
+            String(ipfs_path),
+            String(sent_to),
+            String(file_size),
             {
                 accounts: {
+                    state: state_pda,
                     share: share_pda,
                     authority: wallet.publicKey,
                     ...defaultAccount,
                 },
             }
         );
+        
+        console.log(tx)
+    
 
-        if (shareType === "wallet") {
-            file[0].addUnique("allowedAddresses", sent_to);
-            await file[0].save();
-        }
     };
 
-    return { newFileShare };
+    const fetchMyShareTransactions = async () => {
+        const allShares = await program.account.shareAccount.all();
+        return allShares
+    }
+
+    return { newFileShare, fetchMyShareTransactions };
 };
 
 export default useShare;

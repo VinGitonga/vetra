@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 [programs.devnet]
-vetra = "7MKwk7skNoT7XvVqBah65o8CRQsgfcEuXTkfuNxsQf67"
+vetra = "74HrdaZXYxhozpW85ZicG1pJm4Fkf6PrxdPENeHXsXgK"
 
 [registry]
 url = "https://api.apr.dev"

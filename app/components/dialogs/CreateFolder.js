@@ -19,7 +19,9 @@ export default function CreateFolder({ isOpen, closeModal }) {
 
         try {
             createFolder(displayName);
+            toast("success", `${displayName} Created Successfully`)
             setDisplayName("");
+            setLoading(false);
             closeModal();
         } catch (err) {
             console.log(err);

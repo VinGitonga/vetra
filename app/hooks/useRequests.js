@@ -3,6 +3,7 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { PublicKey } from "@solana/web3.js";
 import { SOLANA_HOST } from "../utils/constants";
 import { getProgramInstance, filterRequests } from "../utils/utils";
+import useAuth from "../hooks/useAuth";
 
 const anchor = require("@project-serum/anchor");
 const utf8 = anchor.utils.bytes.utf8;
@@ -17,6 +18,7 @@ const defaultAccount = {
 
 const useRequests = () => {
     const wallet = useWallet();
+    const { authUser } = useAuth();
     const connection = new anchor.web3.Connection(SOLANA_HOST);
     const program = getProgramInstance(connection, wallet);
 
@@ -30,7 +32,7 @@ const useRequests = () => {
         console.log(allRequests);
         const filteredRequests = filterRequests(
             allRequests,
-            wallet.publicKey,
+            wallet?.publicKey?.toString(),
             filterType
         );
 
@@ -64,7 +66,7 @@ const useRequests = () => {
             stateInfo = await program.account.stateAccount.fetch(state_pda);
             console.log(stateInfo);
         } catch {
-            await program.state.rpc.createState({
+            await program.rpc.createState({
                 accounts: {
                     state: state_pda,
                     authority: wallet.publicKey,
@@ -88,8 +90,8 @@ const useRequests = () => {
         // convert the address to (wallet address) to string
         const addressToPubkey = new PublicKey(addressTo);
 
-        // make the create new request transaction
-        const tx = await program.state.rpc.createRequest(
+        // make the create new request trans;
+        const tx = await program.rpc.createRequest(
             message,
             author,
             addressToPubkey,
@@ -110,10 +112,15 @@ const useRequests = () => {
         index,
         count,
         msgTxt,
-        author,
         document_name,
         document_cid
     ) => {
+        console.log(index);
+        console.log(count);
+        console.log("msg", msgTxt);
+        console.log("author", authUser?.name);
+        console.log("docname", document_name);
+        console.log("doccid", document_cid);
         let [request_pda] = await anchor.web3.PublicKey.findProgramAddress(
             [
                 utf8.encode("request"),
@@ -131,11 +138,14 @@ const useRequests = () => {
             program.programId
         );
 
-        const tx = await program.state.rpc.createReply(
+        let author = "Jake jekins"
+        let doc_cid = Buffer.from(document_cid, 'utf-8').toString()
+
+        const tx = await program.rpc.createReply(
             msgTxt,
             author,
             document_name,
-            document_cid,
+            doc_cid,
             {
                 accounts: {
                     request: request_pda,

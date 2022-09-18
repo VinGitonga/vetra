@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token};
 use std::mem::size_of;
 
-declare_id!("7MKwk7skNoT7XvVqBah65o8CRQsgfcEuXTkfuNxsQf67");
+declare_id!("74HrdaZXYxhozpW85ZicG1pJm4Fkf6PrxdPENeHXsXgK");
 
 // Constants
 const USER_NAME_LENGTH: usize = 50;
@@ -28,6 +28,9 @@ pub mod vetra {
 
         // Init the request count
         state.request_count = 0;
+
+        // init the share count
+        state.share_count = 0;
 
         // return success
         Ok(())
@@ -101,12 +104,12 @@ pub mod vetra {
         reply.authority = ctx.accounts.authority.key();
         // set the msg
         reply.reply_msg = msg;
+        // set the author of the reply msg or document
+        reply.reply_author = author;
         // set document name if any otherwise an empty string
         reply.document_name = document_name;
         // set document cid if any otherwise an empty string
         reply.document_cid = document_cid;
-        // set the author of the reply msg or document
-        reply.reply_author = author;
         // set reply index
         reply.reply_index = request.reply_count;
         // set the timestamp for the reply
@@ -126,8 +129,10 @@ pub mod vetra {
         filename: String,
         ipfs_path: String,
         sent_to: String,
-        file_size: u64,
+        file_size: String,
     ) -> Result<()> {
+        // get state acc from context
+        let state = &mut ctx.accounts.state;
         // get share account from context
         let share = &mut ctx.accounts.share;
 
@@ -139,6 +144,8 @@ pub mod vetra {
         share.sent_to = sent_to;
         share.file_size = file_size;
         share.share_time = ctx.accounts.clock.unix_timestamp;
+
+        state.share_count += 1;
 
         Ok(())
     }
@@ -262,10 +269,18 @@ pub struct CreateReply<'info> {
 // Create a new sharing document transaction
 #[derive(Accounts)]
 pub struct CreateShare<'info> {
+    // Authenticate the state account
+    #[account(
+        mut,
+        seeds = [b"state".as_ref()],
+        bump,
+    )]
+    pub state: Account<'info, StateAccount>,
+
     // init new share account
     #[account(
         init,
-        seeds = [b"share".as_ref(), authority.key().as_ref()],
+        seeds = [b"share".as_ref(), state.share_count.to_be_bytes().as_ref()],
         bump,
         payer = authority,
         space = size_of::<ShareAccount>() + FILENAME_LEN + FILE_ID + DOCUMENT_CID_LEN + USER_EMAIL_LENGTH + 8 + 32,
@@ -292,6 +307,8 @@ pub struct StateAccount {
     pub authority: Pubkey,
     // request count - keeps track of the requests made
     pub request_count: u64,
+    // tracks document shares by each account
+    pub share_count: u64,
 }
 
 // User Account
@@ -359,7 +376,7 @@ pub struct ShareAccount {
     // sent_to : wallet address or email address
     sent_to: String,
     // file size
-    file_size: u64,
+    file_size: String,
     // time the file was sent
     share_time: i64,
 }

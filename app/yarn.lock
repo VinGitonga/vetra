@@ -7104,6 +7104,13 @@ it-to-stream@^1.0.0:
     p-fifo "^1.0.0"
     readable-stream "^3.6.0"
 
+javascript-time-ago@^2.5.7:
+  version "2.5.7"
+  resolved "https://registry.yarnpkg.com/javascript-time-ago/-/javascript-time-ago-2.5.7.tgz#a99a77c23e2e59810da4b41b935801928e209c87"
+  integrity sha512-EGvh6K4hpJz0S0aZinbW2EfXDqT/JBB84HfMOFDTzGg7yjpjql9feSgtlG1JQ6b6/NkIxl+PoKSUTEMsatTuTg==
+  dependencies:
+    relative-time-format "^1.1.4"
+
 jayson@^3.4.4:
   version "3.7.0"
   resolved "https://registry.yarnpkg.com/jayson/-/jayson-3.7.0.tgz#b735b12d06d348639ae8230d7a1e2916cb078f25"
@@ -8981,6 +8988,11 @@ regexpp@^3.0.0, regexpp@^3.1.0, regexpp@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/regexpp/-/regexpp-3.2.0.tgz#0425a2768d8f23bad70ca4b90461fa2f1213e1b2"
   integrity sha512-pq2bWo9mVD43nbts2wGv17XLiNLya+GklZ8kaDLV2Z08gDCsGpnKn9BFMepvWuHCbyVvY7J5o5+BVvoQbmlJLg==
+
+relative-time-format@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/relative-time-format/-/relative-time-format-1.1.4.tgz#50c308a482985333a13df119b1ff2763e3eb0685"
+  integrity sha512-WRWEDEZFTD/95oYMd58kzlYHI6QzexMpPkxvi4/P+NLdzli/tteNonmAa5jYLm8ehJVTGiM2siNg7i1Dkn/gDw==
 
 request@^2.85.0:
   version "2.88.2"

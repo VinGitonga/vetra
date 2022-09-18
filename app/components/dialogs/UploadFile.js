@@ -4,7 +4,7 @@ import SelectFolder from "./SelectFolder";
 import { useDropzone } from "react-dropzone";
 import useStorage from "../../hooks/useStorage";
 import { useWallet } from "@solana/wallet-adapter-react";
-import { useMoralisQuery } from "react-moralis";
+import { useMoralis } from "react-moralis";
 import useToast from "../../hooks/useToast";
 import Badge from "../common/Badge";
 import Progress from "../common/ProgressBar";
@@ -12,6 +12,7 @@ import PrimaryButton from "../common/PrimaryButton";
 
 export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
     const wallet = useWallet();
+    const { Moralis } = useMoralis()
     const toast = useToast(5000);
     const [show, setShow] = useState(false);
     const [uploadProgress, setUploadProgress] = useState(0);
@@ -21,6 +22,14 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
     const [folderId, setFolderId] = useState(null);
     const [selectedFolder, setSelectedFolder] = useState(null);
     const [startUpload, setStartUpload] = useState(false);
+    const [folders, setFolders] = useState([])
+
+    const resetFields = () => {
+        setFolderId(null);
+        setFiles([]);
+        setStartUpload(false);
+        setUploadProgress(0);
+    };
 
     const { uploadFiles } = useStorage(
         setUploadProgress,
@@ -31,28 +40,39 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
         resetFields
     );
 
-    const resetFields = () => {
-        setFolderId(null);
-        setFiles([]);
-        setStartUpload(false);
-        setUploadProgress(0);
-    };
-
     const closeDirModal = () => {
         setFolderId(selectedFolder?.id);
         setShow(false);
     };
 
-    const { data } = useMoralisQuery("Folder", (query) =>
-        query.equalTo("ownerAddress", wallet?.publicKey?.toString())
-    );
+    async function getFolders(){
+        if(!wallet.connected){
+            toast("error", "Please connected your wallet first");
+            return;
+        }
+
+        try {
+            const Folder = Moralis.Object.extend("Folder");
+            const query = new Moralis.Query(Folder);
+            query.equalTo(
+                "ownerAddress",
+                wallet.publicKey.toString()
+            );
+            let results = await query.find();
+            console.log("results folders", results);
+            setFolders(results);
+        } catch (err) {
+            console.log(err);
+        }
+
+    }
 
     const showDirModal = () => {
-        setSelectedFolder(data[0]);
+        getFolders()
+        setSelectedFolder(folders[0]);
         setShow(true);
     };
 
-    console.log(data);
 
     const onDrop = useCallback(async (acceptedFiles) => {
         console.log(acceptedFiles);
@@ -89,6 +109,9 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
         }
     }, [msgType]);
 
+    console.log(folders);
+
+
     return (
         <>
             <SelectFolder
@@ -96,7 +119,7 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
                 closeDirModal={closeDirModal}
                 selectedFolder={selectedFolder}
                 setSelectedFolder={setSelectedFolder}
-                data={data}
+                data={folders}
             />
             <Transition appear show={isOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeModal}>

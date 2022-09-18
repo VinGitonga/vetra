@@ -2,369 +2,378 @@
     "version": "0.1.0",
     "name": "vetra",
     "instructions": [
-        {
-            "name": "createState",
-            "accounts": [
-                {
-                    "name": "state",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "authority",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": []
-        },
-        {
-            "name": "createUser",
-            "accounts": [
-                {
-                    "name": "user",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "authority",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "tokenProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "clock",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": [
-                {
-                    "name": "name",
-                    "type": "string"
-                },
-                {
-                    "name": "email",
-                    "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "createRequest",
-            "accounts": [
-                {
-                    "name": "state",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "request",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "authority",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "tokenProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "clock",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": [
-                {
-                    "name": "msg",
-                    "type": "string"
-                },
-                {
-                    "name": "author",
-                    "type": "string"
-                },
-                {
-                    "name": "addressedTo",
-                    "type": "publicKey"
-                }
-            ]
-        },
-        {
-            "name": "createReply",
-            "accounts": [
-                {
-                    "name": "request",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "reply",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "authority",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "tokenProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "clock",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": [
-                {
-                    "name": "msg",
-                    "type": "string"
-                },
-                {
-                    "name": "author",
-                    "type": "string"
-                },
-                {
-                    "name": "documentName",
-                    "type": "string"
-                },
-                {
-                    "name": "documentCid",
-                    "type": "string"
-                }
-            ]
-        },
-        {
-            "name": "createShare",
-            "accounts": [
-                {
-                    "name": "share",
-                    "isMut": true,
-                    "isSigner": false
-                },
-                {
-                    "name": "authority",
-                    "isMut": true,
-                    "isSigner": true
-                },
-                {
-                    "name": "systemProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "tokenProgram",
-                    "isMut": false,
-                    "isSigner": false
-                },
-                {
-                    "name": "clock",
-                    "isMut": false,
-                    "isSigner": false
-                }
-            ],
-            "args": [
-                {
-                    "name": "fileId",
-                    "type": "string"
-                },
-                {
-                    "name": "filename",
-                    "type": "string"
-                },
-                {
-                    "name": "ipfsPath",
-                    "type": "string"
-                },
-                {
-                    "name": "sentTo",
-                    "type": "string"
-                },
-                {
-                    "name": "fileSize",
-                    "type": "u64"
-                }
-            ]
-        }
+      {
+        "name": "createState",
+        "accounts": [
+          {
+            "name": "state",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "authority",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": []
+      },
+      {
+        "name": "createUser",
+        "accounts": [
+          {
+            "name": "user",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "authority",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "clock",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "name",
+            "type": "string"
+          },
+          {
+            "name": "email",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "createRequest",
+        "accounts": [
+          {
+            "name": "state",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "request",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "authority",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "clock",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "msg",
+            "type": "string"
+          },
+          {
+            "name": "author",
+            "type": "string"
+          },
+          {
+            "name": "addressedTo",
+            "type": "publicKey"
+          }
+        ]
+      },
+      {
+        "name": "createReply",
+        "accounts": [
+          {
+            "name": "request",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "reply",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "authority",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "clock",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "msg",
+            "type": "string"
+          },
+          {
+            "name": "author",
+            "type": "string"
+          },
+          {
+            "name": "documentName",
+            "type": "string"
+          },
+          {
+            "name": "documentCid",
+            "type": "string"
+          }
+        ]
+      },
+      {
+        "name": "createShare",
+        "accounts": [
+          {
+            "name": "state",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "share",
+            "isMut": true,
+            "isSigner": false
+          },
+          {
+            "name": "authority",
+            "isMut": true,
+            "isSigner": true
+          },
+          {
+            "name": "systemProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "tokenProgram",
+            "isMut": false,
+            "isSigner": false
+          },
+          {
+            "name": "clock",
+            "isMut": false,
+            "isSigner": false
+          }
+        ],
+        "args": [
+          {
+            "name": "fileId",
+            "type": "string"
+          },
+          {
+            "name": "filename",
+            "type": "string"
+          },
+          {
+            "name": "ipfsPath",
+            "type": "string"
+          },
+          {
+            "name": "sentTo",
+            "type": "string"
+          },
+          {
+            "name": "fileSize",
+            "type": "string"
+          }
+        ]
+      }
     ],
     "accounts": [
-        {
-            "name": "StateAccount",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "authority",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "requestCount",
-                        "type": "u64"
-                    }
-                ]
+      {
+        "name": "StateAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "authority",
+              "type": "publicKey"
+            },
+            {
+              "name": "requestCount",
+              "type": "u64"
+            },
+            {
+              "name": "shareCount",
+              "type": "u64"
             }
-        },
-        {
-            "name": "UserAccount",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "userWalletAddress",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "email",
-                        "type": "string"
-                    },
-                    {
-                        "name": "name",
-                        "type": "string"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "RequestAccount",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "authority",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "requestMsg",
-                        "type": "string"
-                    },
-                    {
-                        "name": "requestAuthor",
-                        "type": "string"
-                    },
-                    {
-                        "name": "replyCount",
-                        "type": "u64"
-                    },
-                    {
-                        "name": "requestIndex",
-                        "type": "u64"
-                    },
-                    {
-                        "name": "requestAddressTo",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "requestTime",
-                        "type": "i64"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "ReplyAccount",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "authority",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "replyMsg",
-                        "type": "string"
-                    },
-                    {
-                        "name": "documentName",
-                        "type": "string"
-                    },
-                    {
-                        "name": "documentCid",
-                        "type": "string"
-                    },
-                    {
-                        "name": "replyAuthor",
-                        "type": "string"
-                    },
-                    {
-                        "name": "replyIndex",
-                        "type": "u64"
-                    },
-                    {
-                        "name": "replyTime",
-                        "type": "i64"
-                    }
-                ]
-            }
-        },
-        {
-            "name": "ShareAccount",
-            "type": {
-                "kind": "struct",
-                "fields": [
-                    {
-                        "name": "ownerAddress",
-                        "type": "publicKey"
-                    },
-                    {
-                        "name": "fileId",
-                        "type": "string"
-                    },
-                    {
-                        "name": "filename",
-                        "type": "string"
-                    },
-                    {
-                        "name": "ipfsPath",
-                        "type": "string"
-                    },
-                    {
-                        "name": "sentTo",
-                        "type": "string"
-                    },
-                    {
-                        "name": "fileSize",
-                        "type": "u64"
-                    },
-                    {
-                        "name": "shareTime",
-                        "type": "i64"
-                    }
-                ]
-            }
+          ]
         }
+      },
+      {
+        "name": "UserAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "userWalletAddress",
+              "type": "publicKey"
+            },
+            {
+              "name": "email",
+              "type": "string"
+            },
+            {
+              "name": "name",
+              "type": "string"
+            }
+          ]
+        }
+      },
+      {
+        "name": "RequestAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "authority",
+              "type": "publicKey"
+            },
+            {
+              "name": "requestMsg",
+              "type": "string"
+            },
+            {
+              "name": "requestAuthor",
+              "type": "string"
+            },
+            {
+              "name": "replyCount",
+              "type": "u64"
+            },
+            {
+              "name": "requestIndex",
+              "type": "u64"
+            },
+            {
+              "name": "requestAddressTo",
+              "type": "publicKey"
+            },
+            {
+              "name": "requestTime",
+              "type": "i64"
+            }
+          ]
+        }
+      },
+      {
+        "name": "ReplyAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "authority",
+              "type": "publicKey"
+            },
+            {
+              "name": "replyMsg",
+              "type": "string"
+            },
+            {
+              "name": "documentName",
+              "type": "string"
+            },
+            {
+              "name": "documentCid",
+              "type": "string"
+            },
+            {
+              "name": "replyAuthor",
+              "type": "string"
+            },
+            {
+              "name": "replyIndex",
+              "type": "u64"
+            },
+            {
+              "name": "replyTime",
+              "type": "i64"
+            }
+          ]
+        }
+      },
+      {
+        "name": "ShareAccount",
+        "type": {
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "ownerAddress",
+              "type": "publicKey"
+            },
+            {
+              "name": "fileId",
+              "type": "string"
+            },
+            {
+              "name": "filename",
+              "type": "string"
+            },
+            {
+              "name": "ipfsPath",
+              "type": "string"
+            },
+            {
+              "name": "sentTo",
+              "type": "string"
+            },
+            {
+              "name": "fileSize",
+              "type": "string"
+            },
+            {
+              "name": "shareTime",
+              "type": "i64"
+            }
+          ]
+        }
+      }
     ],
     "metadata": {
-        "address": "7MKwk7skNoT7XvVqBah65o8CRQsgfcEuXTkfuNxsQf67"
+      "address": "74HrdaZXYxhozpW85ZicG1pJm4Fkf6PrxdPENeHXsXgK"
     }
-}
+  }

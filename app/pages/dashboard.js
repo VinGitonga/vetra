@@ -1,11 +1,10 @@
-import Layout from "../components/layout";
 import FolderCard from "../components/common/FolderCard";
 import { HiFolderOpen } from "react-icons/hi";
-import { FaFileVideo } from "react-icons/fa";
-import { MdOutlineLibraryMusic } from "react-icons/md";
+import { useState, useEffect } from "react";
 import { BsFileImageFill } from "react-icons/bs";
-import { useMoralisQuery } from "react-moralis";
-import { useWallet } from "@solana/wallet-adapter-react";
+import { useMoralis } from "react-moralis";
+import useAuth from "../hooks/useAuth"
+import Button from "../components/common/PrimaryButton"
 
 let files = [
     {
@@ -32,10 +31,28 @@ let files = [
 ];
 
 export default function Dashboard() {
-    const wallet = useWallet();
-    const { data } = useMoralisQuery("Folder", (query) =>
-        query.equalTo("ownerAddress", wallet?.publicKey?.toString())
-    );
+    const { hasAccount, authUser } = useAuth()
+    const { Moralis } = useMoralis();
+    const [folders, setFolders] = useState([]);
+    // const [files, setFiles] = useState([])
+
+    async function getFolders() {
+        try {
+            const Folder = Moralis.Object.extend("Folder");
+            const query = new Moralis.Query(Folder);
+            query.equalTo("ownerAddress", authUser?.userWalletAddress?.toString());
+            let results = await query.find();
+            setFolders(results);
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    useEffect(() => {
+        if (hasAccount){
+            getFolders()
+        }
+    }, [hasAccount])
 
     return (
         <section
@@ -43,13 +60,27 @@ export default function Dashboard() {
             style={{ fontFamily: "Poppins" }}
         >
             <div className="container px-6 py-3 mx-auto">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-3xl font-semibold text-gray-800 capitalize lg:text-4xl dark:text-white mb-8">
+                        My Files
+                    </h1>
+                    <Button
+                        text={"Refresh Files / Folders"}
+                        isWidthFull={false}
+                        onClick={getFolders}
+                    />
+                </div>
                 <h1 className="text-3xl font-semibold text-gray-800 capitalize lg:text-4xl dark:text-white">
                     Folders
                 </h1>
                 <div className="grid grid-cols-1 gap-8 mt-8 xl:mt-12 xl:gap-12 md:grid-cols-4">
-                    <FolderCard Icon={HiFolderOpen} title="All Folders" hrefPath={"allfolders"} />
-                    {data.length > 3
-                        ? data
+                    <FolderCard
+                        Icon={HiFolderOpen}
+                        title="All Folders"
+                        hrefPath={"allfolders"}
+                    />
+                    {folders.length > 3
+                        ? folders
                               .slice(0, 3)
                               .map((folder) => (
                                   <FolderCard
@@ -59,7 +90,7 @@ export default function Dashboard() {
                                       hrefPath={`folder/${folder.id}`}
                                   />
                               ))
-                        : data.map((folder) => (
+                        : folders.map((folder) => (
                               <FolderCard
                                   key={folder.id}
                                   Icon={BsFileImageFill}

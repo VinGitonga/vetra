@@ -21,16 +21,19 @@ export default function Register() {
             toast("error", "Please fill all the fields");
         } else {
             setLoading(true);
-            await signup(name, email);
-            try {
-                toast("success", "Account created successfully");
-                setHasAccount(true);
-            } catch (err) {
-                console.log(err);
-                toast("error", "An error was encountered");
-            } finally {
-                setLoading(false);
-            }
+            signup(name, email)
+            toast("success", "Account created successfully");
+            setLoading(false)
+            // try {
+            //     await signup(name, email);
+            //     toast("success", "Account created successfully");
+            //     setHasAccount(true);
+            // } catch (err) {
+            //     console.log(err);
+            //     toast("error", "An error was encountered");
+            // } finally {
+            //     setLoading(false);
+            // }
         }
     };
 

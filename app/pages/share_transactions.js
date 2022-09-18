@@ -1,31 +1,55 @@
-import Layout from "../components/layout";
+import useShare from "../hooks/useShare";
+import useAuth from "../hooks/useAuth";
+import { useEffect, useState } from "react";
+import TimeAgo from "javascript-time-ago";
+import en from "javascript-time-ago/locale/en.json";
+import prettyBytes from "pretty-bytes";
+import Button from "../components/common/PrimaryButton";
 
+TimeAgo.addLocale(en);
 
-let files = [
-    {
-        name: "Get Started with Typescript.pdf",
-        location: "Documents",
-        sent_to: "7MKwk....xsQf67",
-        sent_on: "2022-06-24 11:54PM",
-        size: "8.5 MB"
-    },
-    {
-        name: "Deadpool Full Movies.mkv",
-        location: "Videos",
-        sent_to: "richy@gmail.com",
-        sent_on: "2022-09-01 10:12AM",
-        size: "1054 MB"
-    },
-    {
-        name: "IMG-25145551112.png",
-        location: "Pictures",
-        sent_to: "7MKwk....xsQf67",
-        sent_on: "2022-07-11 02:36PM",
-        size: "2.3 MB"
-    },
-];
+const timeAgo = new TimeAgo("en-US");
+
+const regexExp =
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/gi;
+const getSlicedAddress = (address) =>
+    regexExp.test(address)
+        ? address
+        : `${address.slice(0, 6)}.....${address.slice(-6)}`;
+const getFileSize = (fileSize) => prettyBytes(parseInt(fileSize));
 
 export default function ShareTransactions() {
+    const [files, setFiles] = useState([]);
+    const { hasAccount, authUser } = useAuth();
+    const { fetchMyShareTransactions } = useShare();
+
+    const getMyTransactions = async () => {
+        let allTransactions = await fetchMyShareTransactions();
+        setFiles(allTransactions);
+    };
+
+    const getSortedFiles = (allFiles) => {
+        let newFiles = allFiles.filter(
+            (item) =>
+                item.account.ownerAddress.toString() ===
+                authUser.userWalletAddress.toString()
+        );
+        return newFiles.sort(
+            (a, b) =>
+                b.account.shareTime.toNumber() -
+                a -
+                account.shareTime.toNumber()
+        );
+    };
+
+    useEffect(() => {
+        if (hasAccount) {
+            getMyTransactions();
+        }
+    }, [hasAccount]);
+
+    console.log(files);
+
     return (
         <section
             className="bg-white dark:bg-gray-900"
@@ -36,67 +60,100 @@ export default function ShareTransactions() {
                     Documents/Files Shared Transactions
                 </h1>
 
-                <h2 className="text-sm font-semibold text-gray-800 capitalize lg:text-xl dark:text-white mt-8 mb-4">
-                    Files Shared
-                </h2>
-
-                <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                            <tr>
-                                <th scope="col" className="py-3 px-6">
-                                    Name
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                    Location
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                    Shared With
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                    Shared On
-                                </th>
-                                <th scope="col" className="py-3 px-6">
-                                    Size
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {files.map((item, i) => (
-                                <tr
-                                    key={i}
-                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                                >
-                                    <th
-                                        scope="row"
-                                        className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
-                                    >
-                                        {item.name}
-                                    </th>
-                                    <td className="py-4 px-6">
-                                        {item.location}
-                                    </td>
-                                    <td className="py-4 px-6">{item.sent_to}</td>
-                                    <td className="py-4 px-6">{item.sent_on}</td>
-                                    <td className="py-4 px-6">{item.size}</td>
-                                    {/* <td className="py-4 px-6 text-right">
-                                        <a
-                                            href="#"
-                                            className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
-                                        >
-                                            Share
-                                        </a>
-                                    </td> */}
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
+                <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-sm font-semibold text-gray-800 capitalize lg:text-xl dark:text-white mt-8 mb-4">
+                        Files Shared
+                    </h2>
+                    <Button
+                        text={"Refresh Files"}
+                        isWidthFull={false}
+                        onClick={getMyTransactions}
+                    />
                 </div>
+
+                {files.length > 0 ? (
+                    <>
+                        {getSortedFiles(files).length > 0 ? (
+                            <div className="overflow-x-auto relative shadow-md sm:rounded-lg">
+                                <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                    <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                                        <tr>
+                                            <th
+                                                scope="col"
+                                                className="py-3 px-6"
+                                            >
+                                                File Name
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="py-3 px-6"
+                                            >
+                                                Shared With
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="py-3 px-6"
+                                            >
+                                                Shared On
+                                            </th>
+                                            <th
+                                                scope="col"
+                                                className="py-3 px-6"
+                                            >
+                                                Size
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {getSortedFiles(files).map(
+                                            ({ account: file }) => (
+                                                <tr
+                                                    key={file.shareTime}
+                                                    className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                                >
+                                                    <th
+                                                        scope="row"
+                                                        className="py-4 px-6 font-medium text-gray-900 whitespace-nowrap dark:text-white"
+                                                    >
+                                                        {file.filename}
+                                                    </th>
+                                                    <td className="py-4 px-6">
+                                                        {getSlicedAddress(
+                                                            file.sentTo
+                                                        )}
+                                                    </td>
+                                                    <td className="py-4 px-6">
+                                                        {timeAgo.format(
+                                                            new Date(
+                                                                file.shareTime *
+                                                                    1000
+                                                            ),
+                                                            "twitter-now"
+                                                        )}
+                                                    </td>
+                                                    <td className="py-4 px-6">
+                                                        {getFileSize(
+                                                            file.fileSize
+                                                        )}
+                                                    </td>
+                                                </tr>
+                                            )
+                                        )}
+                                    </tbody>
+                                </table>
+                            </div>
+                        ) : (
+                            <div className="font-bold text-gray-700 dark:text-white">
+                                No Files Shared Yet
+                            </div>
+                        )}
+                    </>
+                ) : (
+                    <div className="font-bold text-gray-700 dark:text-white">
+                        No Files Shared Yet
+                    </div>
+                )}
             </div>
         </section>
     );
 }
-
-// ShareTransactions.getLayout = function getLayout(page) {
-//     return <Layout>{page}</Layout>;
-// };

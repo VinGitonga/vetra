@@ -3,33 +3,28 @@ import { Fragment, useState } from "react";
 import useToast from "../../hooks/useToast";
 import PrimaryButton from "../common/PrimaryButton";
 import useShare from "../../hooks/useShare";
-import {BsFillFileTextFill} from "react-icons/bs"
+import { BsFillFileTextFill } from "react-icons/bs";
+import RadioButton from "../common/RadioButton";
+import { useMoralis } from "react-moralis";
 
 export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
-    const toast = useToast();
+    const { Moralis } = useMoralis();
+    const toast = useToast(5000);
     const [shareType, setShareType] = useState("wallet");
+    const handleShareTypeWalletChange = () => setShareType("wallet");
+    const handleShareTypeEmailChange = () => setShareType("email");
+
     const [email, setEmail] = useState("");
     const [walletAddress, setWalletAddress] = useState("");
-    const { newFileShare } = useShare(file.id);
 
-    const clickSubmit = (e) => {
-        e.preventDefault();
-        if (shareType === "wallet" && !walletAddress) {
-            toast("error", "Paste in the wallet address");
-        } else if (shareType === "email" && !email) {
-            toast("error", "Paste in the email address");
-        } else {
-            newFileShare(
-                file.attributes.displayName,
-                file.attributes.ipfsPath,
-                getShareType(shareType),
-                file.attributes.size,
-                shareType
-            );
-        }
+    const resetForm = () => {
+        setEmail("");
+        setWalletAddress("");
+        setShareType("wallet");
+        setIsOpen(false);
     };
 
-    function getShareType(shareType) {
+    function getAddress(shareType) {
         switch (shareType) {
             case "wallet":
                 return walletAddress;
@@ -39,6 +34,46 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
                 return walletAddress;
         }
     }
+
+    const { newFileShare } = useShare();
+
+
+    function updateFile(fileId, address) {
+        const File = Moralis.Object.extend("File");
+        const query = new Moralis.Query(File);
+
+        //get monster with id xWMyZ4YEGZ
+        query.get(fileId).then(
+            async (file) => {
+                file.addUnique("allowedAddresses", address)
+                let resp = await file.save()
+                console.log(resp)
+                toast("success", "File Shared Successfully");
+                resetForm();
+            },
+            (error) => {
+                console.log(error)
+            }
+        );
+    }
+
+    const clickSubmit = async (e) => {
+        e.preventDefault();
+        if (shareType === "wallet" && !walletAddress) {
+            toast("error", "Paste in the wallet address");
+        } else if (shareType === "email" && !email) {
+            toast("error", "Paste in the email address");
+        } else {
+            newFileShare(
+                file.id,
+                file.attributes.displayName,
+                file.attributes.ipfsPath,
+                getAddress(shareType),
+                file.attributes.size
+            );
+            updateFile(file.id, getAddress(shareType))
+        }
+    };
 
     return (
         <>
@@ -56,7 +91,10 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
                         <div className="fixed inset-0 bg-black bg-opacity-25" />
                     </Transition.Child>
 
-                    <div className="fixed inset-0 overflow-y-auto" style={{ fontFamily: "Poppins" }} >
+                    <div
+                        className="fixed inset-0 overflow-y-auto"
+                        style={{ fontFamily: "Poppins" }}
+                    >
                         <div className="flex min-h-full items-center justify-center p-4 text-center">
                             <Transition.Child
                                 as={Fragment}
@@ -81,31 +119,20 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
                                         Share to
                                     </label>
                                     <div className="flex mt-2">
-                                        <div className="flex items-center mr-4">
-                                            <input
-                                                type="radio"
-                                                value={"wallet"}
-                                                onClick={() => setShareType("wallet")}
-                                                className={`w-4 h-4 bg-gray-100 border-gray-300 focus:ring-2 dark:bg-gray-700 dark:border-gray-600 ${shareType === "wallet" && "ring-2"} `}
-                                            />
-                                            <label
-                                                for="inline-radio"
-                                                className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
-                                            >
-                                                Wallet Address
-                                            </label>
-                                        </div>
-                                        <div className="flex items-center mr-4">
-                                            <input
-                                                type="radio"
-                                                value={"email"}
-                                                onClick={() => setShareType("email") }
-                                                className={`w-4 h-4 bg-gray-100 border-gray-300 dark:bg-gray-700 dark:border-gray-600 ${shareType === "email" && "ring-2"} `}
-                                            />
-                                            <label className="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">
-                                                Email Address
-                                            </label>
-                                        </div>
+                                        <RadioButton
+                                            label={"Wallet Address"}
+                                            value={shareType === "wallet"}
+                                            onChange={
+                                                handleShareTypeWalletChange
+                                            }
+                                        />
+                                        <RadioButton
+                                            label={"Email Address"}
+                                            value={shareType === "email"}
+                                            onChange={
+                                                handleShareTypeEmailChange
+                                            }
+                                        />
                                     </div>
                                     <div className="mt-2">
                                         {shareType === "wallet" ? (

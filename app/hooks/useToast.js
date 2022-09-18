@@ -1,6 +1,6 @@
 import { useToastDispatchContext } from "../context/ToastContext";
 
-export default function useToast(duration) {
+export default function useToast(duration=5000) {
     const dispatch = useToastDispatchContext()
 
     function toast(type, message){

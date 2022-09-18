@@ -32,17 +32,21 @@ const useStorage = (
 
         const cid = client.put(files, { onRootCidReady, onStoredChunk });
 
-        const fileLinks = getFileLinks((await cid).toString());
+        // const fileLinks = getFileLinks((await cid).toString());
+        const parentCid = (await cid).toString()
 
-        (await fileLinks).forEach(async (item) => {
+        const allFiles = retrieveFiles(parentCid)
+
+        (await allFiles).forEach(async (item) => {
+            let ipfsPath = `${parentCid}/${item.name}`
             let data = {
                 originalName: item.name,
                 displayName: item.name,
                 size: item.size,
                 initFolder: folderId,
                 currentFolder: folderId,
-                parentCid: (await cid).toString(),
-                ipfsPath: item.path,
+                parentCid: parentCid,
+                ipfsPath: ipfsPath,
                 fileCid: item.cid.toString(),
                 owner: wallet.publicKey.toString(),
                 allowedAddresses: [wallet.publicKey.toString()],
@@ -77,6 +81,33 @@ const useStorage = (
 
         return links;
     }
+
+    async function retrieveFiles(cid){
+        const client = makeStorageClient()
+        const res = await client.get(cid)
+        let allFiles = []
+    
+        console.log(`Got a response! [${res.status}] ${res.statusText}`)
+    
+        if (!res.ok){
+            throw new Error(`Failed to get ${cid} - [${res.status}] ${res.statusText}`)
+        }
+    
+        // unpack File Objects from the response
+        const files = await res.files()
+        for (const file of files){
+            let fileObj = {
+                name: file.name,
+                cid: file.cid,
+                size: file.size
+            }
+            allFiles.push(fileObj)
+        }
+
+        return allFiles
+    }
+
+
 
     return { uploadFiles };
 };

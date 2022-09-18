@@ -52,9 +52,14 @@ export default function SelectFolder({
                                                 value={selectedFolder}
                                                 onChange={setSelectedFolder}
                                             >
-                                                <RadioGroup.Label className="sr-only">
+                                                <RadioGroup.Label>
                                                     Folders
                                                 </RadioGroup.Label>
+                                                {data.length <= 0 ? (
+                                                    <div className="font-bold text-gray-700 dark:text-white">
+                                                    You havent created a folder yet 😢, Create One 😁
+                                                </div>
+                                                ): (
                                                 <div className="space-y-2">
                                                     {data.map((folder) => (
                                                         <RadioGroup.Option
@@ -112,10 +117,7 @@ export default function SelectFolder({
                                                                                     }`}
                                                                                 >
                                                                                     <span>
-                                                                                        {folder?.attributes?.createdAt?.toString()}
-
-                                                                                        /
-                                                                                        {folder?.attributes?.updatedAt?.toString()}
+                                                                                        {new Date(folder?.attributes?.updatedAt).toLocaleString()}
                                                                                     </span>{" "}
                                                                                     <span aria-hidden="true">
                                                                                         &middot;
@@ -139,6 +141,7 @@ export default function SelectFolder({
                                                         </RadioGroup.Option>
                                                     ))}
                                                 </div>
+                                                )}
                                             </RadioGroup>
                                         </div>
                                     </div>

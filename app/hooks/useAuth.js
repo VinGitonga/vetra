@@ -32,7 +32,7 @@ const useAuth = () => {
         );
 
         // create the user account on solana
-        await program.rpc
+        const tx = await program.rpc
             .createUser(name, email, {
                 accounts: {
                     user: user_pda,
@@ -40,6 +40,10 @@ const useAuth = () => {
                     ...defaultAccount,
                 },
             })
+
+        console.log(tx)
+        const userInfo = await program.account.userAccount.fetch(user_pda);
+        console.log(userInfo)
     };
 
     const checkAccount = async () => {
@@ -52,6 +56,7 @@ const useAuth = () => {
         try {
             const userInfo = await program.account.userAccount.fetch(user_pda);
             // log userInfo retrieved
+            console.log(userInfo)
             setAuthUser(userInfo);
             setHasAccount(true);
         } catch (err) {
