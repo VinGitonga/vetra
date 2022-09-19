@@ -64,7 +64,6 @@ export default function CreateFolder({ isOpen, closeModal, toast }) {
                                     </Dialog.Title>
                                     <div className="mt-2">
                                         <label
-                                            for="email"
                                             className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
                                         >
                                             Folder Name

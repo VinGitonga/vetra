@@ -11,7 +11,6 @@ const Badge = ({ text, onClick }) => {
                 onClick={onClick}
             >
                 <svg
-                    ariaHidden="true"
                     className="w-3.5 h-3.5"
                     fill="currentColor"
                     viewBox="0 0 20 20"

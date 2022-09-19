@@ -20,20 +20,22 @@ export default function Register() {
         if (!name || !email) {
             toast("error", "Please fill all the fields");
         } else {
-            setLoading(true);
-            signup(name, email)
-            toast("success", "Account created successfully");
-            setLoading(false)
-            // try {
-            //     await signup(name, email);
-            //     toast("success", "Account created successfully");
-            //     setHasAccount(true);
-            // } catch (err) {
-            //     console.log(err);
-            //     toast("error", "An error was encountered");
-            // } finally {
-            //     setLoading(false);
-            // }
+            // setLoading(true);
+            // signup(name, email)
+            // toast("success", "Account created successfully");
+            // setLoading(false)
+            try {
+                await signup(name, email);
+                toast("success", "Account created successfully");
+                setHasAccount(true);
+                setLoading(false)
+            } catch (err) {
+                setLoading(false)
+                console.log(err);
+                toast("error", "An error was encountered");
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -53,21 +55,21 @@ export default function Register() {
                 <div className="container relative flex flex-col min-h-screen px-6 py-8 mx-auto">
                     <section className="flex items-center flex-1">
                         <div className="w-full max-w-md mx-auto">
-                            <h3 class="text-3xl font-semibold text-center text-gray-700 dark:text-white">
+                            <h3 className="text-3xl font-semibold text-center text-gray-700 dark:text-white">
                                 Create an Account with Vetra
                             </h3>
 
-                            <form class="mt-6">
+                            <form className="mt-6">
                                 <div>
                                     <label
                                         for="name"
-                                        class="block text-sm text-gray-800 dark:text-gray-200"
+                                        className="block text-sm text-gray-800 dark:text-gray-200"
                                     >
                                         Name
                                     </label>
                                     <input
                                         type="text"
-                                        class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                         placeholder="Walt Mich"
                                         value={name}
                                         onChange={(e) =>
@@ -76,11 +78,10 @@ export default function Register() {
                                     />
                                 </div>
 
-                                <div class="mt-4">
+                                <div className="mt-4">
                                     <div>
                                         <label
-                                            for="email"
-                                            class="block text-sm text-gray-800 dark:text-gray-200"
+                                            className="block text-sm text-gray-800 dark:text-gray-200"
                                         >
                                             Email Address
                                         </label>
@@ -88,7 +89,7 @@ export default function Register() {
 
                                     <input
                                         type="email"
-                                        class="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
+                                        className="block w-full px-4 py-2 mt-2 text-gray-700 bg-white border rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-300 focus:ring-blue-300 focus:outline-none focus:ring focus:ring-opacity-40"
                                         placeholder="walt@kovu.com"
                                         value={email}
                                         onChange={(e) =>
@@ -97,7 +98,7 @@ export default function Register() {
                                     />
                                 </div>
 
-                                <div class="mt-6">
+                                <div className="mt-6">
                                     <PrimaryButton
                                         text="Submit"
                                         isLoading={loading}

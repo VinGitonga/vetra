@@ -148,7 +148,6 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen, toast }) {
                                             <label className="flex flex-col justify-center items-center w-full h-64 bg-gray-50 rounded-lg border-2 border-gray-300 border-dashed cursor-pointer dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600">
                                                 <div className="flex flex-col justify-center items-center pt-5 pb-6">
                                                     <svg
-                                                        ariaHidden="true"
                                                         className="mb-3 w-10 h-10 text-gray-400"
                                                         fill="none"
                                                         stroke="currentColor"
@@ -189,6 +188,7 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen, toast }) {
                                             files?.map((file, i) => (
                                                 <Badge
                                                     text={file?.name}
+                                                    key={i}
                                                     onClick={() => {
                                                         let newFiles =
                                                             files.filter(

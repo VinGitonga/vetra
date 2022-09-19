@@ -59,7 +59,6 @@ export default function CreateRequest() {
                     <form>
                         <div>
                             <label
-                                for="message"
                                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-400"
                             >
                                 Message
@@ -101,7 +100,6 @@ export default function CreateRequest() {
                                 </div>
                                 <input
                                     type="text"
-                                    id="input-group-1"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                     placeholder="HVJqBuGymzQWAM7JwixLvQcVSZ6rKowvo3j7eH1yScHN"
                                     value={addressTo}
