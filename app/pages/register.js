@@ -5,7 +5,6 @@ import useToast from "../hooks/useToast";
 import { useRouter } from "next/router";
 import { RiLoginCircleFill } from "react-icons/ri";
 
-
 export default function Register() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -28,9 +27,9 @@ export default function Register() {
                 await signup(name, email);
                 toast("success", "Account created successfully");
                 setHasAccount(true);
-                setLoading(false)
+                setLoading(false);
             } catch (err) {
-                setLoading(false)
+                setLoading(false);
                 console.log(err);
                 toast("error", "An error was encountered");
             } finally {
@@ -44,7 +43,6 @@ export default function Register() {
             router.push("/dashboard");
         }
     }, [hasAccount]);
-
 
     return (
         <>
@@ -61,10 +59,7 @@ export default function Register() {
 
                             <form className="mt-6">
                                 <div>
-                                    <label
-                                        for="name"
-                                        className="block text-sm text-gray-800 dark:text-gray-200"
-                                    >
+                                    <label className="block text-sm text-gray-800 dark:text-gray-200">
                                         Name
                                     </label>
                                     <input
@@ -80,9 +75,7 @@ export default function Register() {
 
                                 <div className="mt-4">
                                     <div>
-                                        <label
-                                            className="block text-sm text-gray-800 dark:text-gray-200"
-                                        >
+                                        <label className="block text-sm text-gray-800 dark:text-gray-200">
                                             Email Address
                                         </label>
                                     </div>
