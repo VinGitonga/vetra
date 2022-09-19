@@ -1,4 +1,5 @@
 import { Dropdown } from "flowbite-react";
+import DownloadBtn from "../common/DownloadBtn";
 
 export default function ResponseItem({ reply, timeAgo }) {
     return (
@@ -33,16 +34,27 @@ export default function ResponseItem({ reply, timeAgo }) {
             </p>
             {reply.documentCid && (
                 <div className="mt-4">
-                    <DropdownMenu label={reply.documentName} />
+                    <DropdownMenu
+                        label={reply.documentName}
+                        documentCid={reply.documentCid}
+                        documentName={reply.documentName}
+                    />
                 </div>
             )}
         </div>
     );
 }
 
-const DropdownMenu = ({ label }) => (
+const DropdownMenu = ({ label, documentCid, documentName }) => (
     <Dropdown label={label}>
-        <Dropdown.Item>Download</Dropdown.Item>
+        <Dropdown.Item>
+            <DownloadBtn
+                fileCid={documentCid}
+                filename={documentName}
+                btnActive={true}
+                isDisabled={false}
+            />
+        </Dropdown.Item>
         <Dropdown.Item>Save to My Files</Dropdown.Item>
     </Dropdown>
 );

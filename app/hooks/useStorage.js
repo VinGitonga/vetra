@@ -1,59 +1,96 @@
-import { useNewMoralisObject } from "react-moralis";
+import { useNewMoralisObject, useMoralis } from "react-moralis";
 import { makeStorageClient } from "../utils/storage";
-import { create } from "ipfs-http-client";
 import { useWallet } from "@solana/wallet-adapter-react";
+import { useState } from "react";
+import prettyBytes from "pretty-bytes";
 
 const useStorage = (
-    setUploadProgress,
-    files,
-    folderId,
     setMsg,
     setMsgType,
-    resetFields
+    resetFields,
+    setProgressMsg
 ) => {
     const { save: saveFile } = useNewMoralisObject("File");
+    const { Moralis } = useMoralis();
     const wallet = useWallet();
     const client = makeStorageClient();
+    const [folderObj, setFolderObj] = useState(null);
+    const [ipfsFiles, setIpfsFiles] = useState([]);
 
-    const uploadFiles = async () => {
-        const onRootCidReady = (cid) => {
-            console.log(`Uploading files with cid: ${cid}`);
-        };
+    async function retrieveFiles(cid) {
+        let allFiles = [];
+        const client = makeStorageClient();
+        try {
+            const res = await client.get(cid).catch((err) => console.log(err));
 
-        let totalSize = files.map((f) => f.size).reduce((a, b) => a + b, 0);
-        let uploaded = 0;
+            console.log(`Got a response! [${res.status}] ${res.statusText}`);
 
-        const onStoredChunk = (size) => {
-            uploaded += size;
-            const pct = Math.floor(100 * (uploaded / totalSize));
-            setUploadProgress(pct);
-            console.log(`Uploading ... ${pct}`);
-        };
+            if (!res.ok) {
+                throw new Error(
+                    `Failed to get ${cid} - [${res.status}] ${res.statusText}`
+                );
+            }
 
-        const cid = client.put(files, { onRootCidReady, onStoredChunk });
+            // unpack File Objects from the response
+            const files = await res.files();
+            for (const file of files) {
+                let fileObj = {
+                    name: file.name,
+                    cid: file.cid.toString(),
+                    size: file.size,
+                };
+                allFiles.push(fileObj);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+        console.log(allFiles);
+        setIpfsFiles(allFiles);
+        return allFiles
+    }
 
-        // const fileLinks = getFileLinks((await cid).toString());
-        const parentCid = (await cid).toString()
+    const uploadFiles = async (files,
+        folderId) => {
+        let totalSize = files?.map((f) => f.size).reduce((a, b) => a + b, 0);
 
-        const allFiles = retrieveFiles(parentCid)
+        const cid = await client.put(files, {
+            onRootCidReady: (localCid) => {
+                setProgressMsg(
+                    `> 🔑 locally calculated Content ID: ${localCid} `
+                );
+                setProgressMsg("> 📡 sending files to web3.storage ");
+            },
 
-        (await allFiles).forEach(async (item) => {
-            let ipfsPath = `${parentCid}/${item.name}`
+            // onStoredChunk is called after each chunk of data is uploaded
+            onStoredChunk: (bytes) =>
+                setProgressMsg(
+                    `> 🛰 sent ${prettyBytes(parseInt(bytes))} / ${prettyBytes(
+                        parseInt(totalSize)
+                    )} to web3.storage`
+                ),
+        });
+
+        getFolderForUpdate(folderId);
+        setProgressMsg("Saving Details ...")
+        await (await retrieveFiles(cid.toString())).forEach(async (item) => {
+            let ipfsPath = `${cid.toString()}/${item.name}`;
             let data = {
                 originalName: item.name,
                 displayName: item.name,
                 size: item.size,
                 initFolder: folderId,
                 currentFolder: folderId,
-                parentCid: parentCid,
+                parentCid: cid.toString(),
                 ipfsPath: ipfsPath,
                 fileCid: item.cid.toString(),
                 owner: wallet.publicKey.toString(),
                 allowedAddresses: [wallet.publicKey.toString()],
             };
             saveFile(data, {
-                onSuccess: (file) => {
+                onSuccess: async (file) => {
                     console.log(file);
+                    file.set("currentParentFolder", folderObj);
+                    await file.save();
                     setMsg(`${data.originalName} Uploaded successfully`);
                     setMsgType("success");
                     resetFields();
@@ -67,47 +104,50 @@ const useStorage = (
                 },
             });
         });
+
+        // (await ipfsFiles).forEach(async (item) => {
+        //     let ipfsPath = `${cid.toString()}/${item.name}`;
+        //     let data = {
+        //         originalName: item.name,
+        //         displayName: item.name,
+        //         size: item.size,
+        //         initFolder: folderId,
+        //         currentFolder: folderId,
+        //         parentCid: cid.toString(),
+        //         ipfsPath: ipfsPath,
+        //         fileCid: item.cid.toString(),
+        //         owner: wallet.publicKey.toString(),
+        //         allowedAddresses: [wallet.publicKey.toString()],
+        //     };
+        //     saveFile(data, {
+        //         onSuccess: async (file) => {
+        //             console.log(file);
+        //             file.set("currentParentFolder", folderObj);
+        //             await file.save();
+        //             setMsg(`${data.originalName} Uploaded successfully`);
+        //             setMsgType("success");
+        //             resetFields();
+        //         },
+        //         onError: (err) => {
+        //             console.log(err);
+        //             setMsg(
+        //                 `An error was encountured while uploading ${data.originalName}`
+        //             );
+        //             setMsgType("error");
+        //         },
+        //     });
+        // });
     };
 
-    async function getFileLinks(ipfsPath) {
-        // console.log(ipfsPath)
-        const url = "https://dweb.link/api/v0";
-        const ipfs = create({ url });
+    async function getFolderForUpdate(folderId) {
+        const Folder = Moralis.Object.extend("Folder");
+        const query = new Moralis.Query(Folder);
 
-        const links = [];
-        for await (const link of ipfs.ls(ipfsPath)) {
-            links.push(link);
-        }
-
-        return links;
+        query.get(folderId).then(
+            (folder) => setFolderObj(folder),
+            (error) => console.log(error)
+        );
     }
-
-    async function retrieveFiles(cid){
-        const client = makeStorageClient()
-        const res = await client.get(cid)
-        let allFiles = []
-    
-        console.log(`Got a response! [${res.status}] ${res.statusText}`)
-    
-        if (!res.ok){
-            throw new Error(`Failed to get ${cid} - [${res.status}] ${res.statusText}`)
-        }
-    
-        // unpack File Objects from the response
-        const files = await res.files()
-        for (const file of files){
-            let fileObj = {
-                name: file.name,
-                cid: file.cid,
-                size: file.size
-            }
-            allFiles.push(fileObj)
-        }
-
-        return allFiles
-    }
-
-
 
     return { uploadFiles };
 };

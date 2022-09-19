@@ -8,22 +8,33 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import CreateFolder from "../dialogs/CreateFolder";
 import UploadFile from "../dialogs/UploadFile";
+import useToast from "../../hooks/useToast";
 
 export default function Sidebar() {
+    const toast = useToast();
     const [isOpen, setIsOpen] = useState(false);
-    const [showUpload, setShowUpload] = useState(false)
+    const [showUpload, setShowUpload] = useState(false);
 
     const closeModal = () => setIsOpen(false);
     const openModal = () => setIsOpen(true);
 
-    const closeUpload = () => setShowUpload(false)
-    const openUpload = () => setShowUpload(true)
+    const closeUpload = () => setShowUpload(false);
+    const openUpload = () => setShowUpload(true);
 
     const router = useRouter();
     return (
         <div className="w-64 h-screen fixed">
-            <CreateFolder isOpen={isOpen} closeModal={closeModal} />
-            <UploadFile isOpen={showUpload} closeModal={closeUpload} setIsOpen={setShowUpload} />
+            <CreateFolder
+                isOpen={isOpen}
+                closeModal={closeModal}
+                toast={toast}
+            />
+            <UploadFile
+                isOpen={showUpload}
+                closeModal={closeUpload}
+                setIsOpen={setShowUpload}
+                toast={toast}
+            />
             <button
                 type="button"
                 onClick={openUpload}

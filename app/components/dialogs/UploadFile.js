@@ -1,21 +1,18 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState, useCallback, useEffect } from "react";
+import { Fragment, useState, useCallback } from "react";
 import SelectFolder from "./SelectFolder";
 import { useDropzone } from "react-dropzone";
 import useStorage from "../../hooks/useStorage";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useMoralis } from "react-moralis";
-import useToast from "../../hooks/useToast";
 import Badge from "../common/Badge";
 import Progress from "../common/ProgressBar";
 import PrimaryButton from "../common/PrimaryButton";
 
-export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
+export default function UploadFile({ isOpen, closeModal, setIsOpen, toast }) {
     const wallet = useWallet();
     const { Moralis } = useMoralis()
-    const toast = useToast(5000);
     const [show, setShow] = useState(false);
-    const [uploadProgress, setUploadProgress] = useState(0);
     const [msg, setMsg] = useState(null);
     const [msgType, setMsgType] = useState(null);
     const [files, setFiles] = useState([]);
@@ -23,21 +20,20 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
     const [selectedFolder, setSelectedFolder] = useState(null);
     const [startUpload, setStartUpload] = useState(false);
     const [folders, setFolders] = useState([])
+    const [progressMsg, setProgressMsg] = useState("")
 
     const resetFields = () => {
         setFolderId(null);
         setFiles([]);
         setStartUpload(false);
-        setUploadProgress(0);
+        setIsOpen(false)
     };
 
     const { uploadFiles } = useStorage(
-        setUploadProgress,
-        files,
-        folderId,
         setMsg,
         setMsgType,
-        resetFields
+        resetFields,
+        setProgressMsg
     );
 
     const closeDirModal = () => {
@@ -83,7 +79,7 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
         onDrop,
     });
 
-    const uploadToStorage = () => {
+    const uploadToStorage = async () => {
         if (files.length <= 0) {
             toast("error", "You haven't selected any file to upload");
             return;
@@ -94,22 +90,9 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
             return;
         }
         setStartUpload(true);
-        uploadFiles();
+        await uploadFiles(files, folderId);
+        toast(msgType, msg)
     };
-
-    useEffect(() => {
-        if (msg) {
-            toast(msgType, msg);
-        }
-    }, [msg]);
-
-    useEffect(() => {
-        if (msgType === "success") {
-            setIsOpen(false);
-        }
-    }, [msgType]);
-
-    console.log(folders);
 
 
     return (
@@ -242,14 +225,14 @@ export default function UploadFile({ isOpen, closeModal, setIsOpen }) {
                                         <div className="mt-4">
                                             <Progress
                                                 title={`Uploading ${files?.length} file(s)`}
-                                                value={uploadProgress}
+                                                msg={progressMsg}
                                             />
                                         </div>
                                     )}
 
                                     <div className="mt-4 flex items-center justify-between">
                                         <PrimaryButton
-                                            text={"Create"}
+                                            text={"Upload"}
                                             isWidthFull={false}
                                             onClick={uploadToStorage}
                                         />

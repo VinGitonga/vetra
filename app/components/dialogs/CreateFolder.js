@@ -1,11 +1,9 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment, useState } from "react";
 import useMoralisDB from "../../hooks/useMoralisDB";
-import useToast from "../../hooks/useToast";
 import PrimaryButton from "../common/PrimaryButton";
 
-export default function CreateFolder({ isOpen, closeModal }) {
-    const toast = useToast();
+export default function CreateFolder({ isOpen, closeModal, toast }) {
     const [displayName, setDisplayName] = useState("");
     const [loading, setLoading] = useState(false);
     const { createFolder } = useMoralisDB();
