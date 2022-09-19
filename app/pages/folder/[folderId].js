@@ -4,7 +4,6 @@ import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";
 import { useState } from "react";
 import FilePreview from "../../components/dialogs/FilePreview";
-import { getFile } from "../../utils/getFile";
 import ShareFile from "../../components/dialogs/ShareFile";
 
 const getFileExtension = (filename) => filename.split(".").pop().toUpperCase();

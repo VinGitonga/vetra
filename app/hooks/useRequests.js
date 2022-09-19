@@ -138,14 +138,11 @@ const useRequests = () => {
             program.programId
         );
 
-        let author = "Jake jekins"
-        let doc_cid = Buffer.from(document_cid, 'utf-8').toString()
-
         const tx = await program.rpc.createReply(
             msgTxt,
-            author,
+            authUser?.name,
             document_name,
-            doc_cid,
+            document_cid,
             {
                 accounts: {
                     request: request_pda,

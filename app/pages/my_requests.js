@@ -3,12 +3,12 @@ import RequestItem from "../components/requests/RequestItem";
 import useRequests from "../hooks/useRequests";
 import useAuth from "../hooks/useAuth";
 import Button from "../components/common/PrimaryButton";
-import { useMoralisQuery } from "react-moralis"
 
 export default function MyRequests() {
     const [requests, setRequests] = useState([]);
-    const { hasAccount, authUser } = useAuth();
+    const { hasAccount } = useAuth();
     const { getRequests, getReplies, newReply } = useRequests();
+
 
     async function fetchMyRequests() {
         let myrequests = await getRequests("myrequests");
@@ -19,18 +19,7 @@ export default function MyRequests() {
         if (hasAccount) {
             fetchMyRequests();
         }
-    }, [hasAccount, requests]);
-
-    console.log(requests);
-
-    const { data } = useMoralisQuery(
-        "File",
-        (query) => query.equalTo("allowedAddresses", authUser?.userWalletAddress?.toString()),
-        [hasAccount]
-    )
-
-    console.log("files",data)
-
+    }, [hasAccount]);
 
     return (
         <section
@@ -56,7 +45,6 @@ export default function MyRequests() {
                                 key={request.account.requestIndex}
                                 getReplies={getReplies}
                                 newReply={newReply}
-                                userFiles={data}
                                 refreshMyRequests={fetchMyRequests}
                             />
                         ))

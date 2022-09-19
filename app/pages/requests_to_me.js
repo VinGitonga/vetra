@@ -3,11 +3,10 @@ import RequestItem from "../components/requests/RequestItem";
 import useRequests from "../hooks/useRequests";
 import useAuth from "../hooks/useAuth";
 import Button from "../components/common/PrimaryButton";
-import { useMoralisQuery } from "react-moralis"
 
 export default function RequestsToMe() {
     const [requests, setRequests] = useState([]);
-    const { hasAccount, authUser } = useAuth();
+    const { hasAccount } = useAuth();
     const { getRequests, getReplies, newReply } = useRequests();
 
     async function fetchMyRequests() {
@@ -21,15 +20,6 @@ export default function RequestsToMe() {
         }
     }, [hasAccount]);
 
-    console.log(requests);
-
-    const { data } = useMoralisQuery(
-        "File",
-        (query) => query.equalTo("allowedAddresses", authUser?.userWalletAddress?.toString()),
-        [hasAccount]
-    )
-
-    console.log("files",data)
 
     return (
         <section
@@ -39,7 +29,7 @@ export default function RequestsToMe() {
             <div className="container px-6 py-3 mx-auto">
                 <div className="flex items-center justify-between">
                     <h1 className="text-3xl font-semibold text-gray-800 capitalize lg:text-4xl dark:text-white">
-                        My File Requests
+                        File Requests To Me
                     </h1>
                     <Button
                         text={"Refresh Requests"}
@@ -55,7 +45,6 @@ export default function RequestsToMe() {
                                 key={request.account.requestIndex}
                                 getReplies={getReplies}
                                 newReply={newReply}
-                                userFiles={data}
                                 refreshMyRequests={fetchMyRequests}
                             />
                         ))
@@ -69,7 +58,3 @@ export default function RequestsToMe() {
         </section>
     );
 }
-
-// RequestsToMe.getLayout = function getLayout(page) {
-//     return <Layout>{page}</Layout>;
-// };

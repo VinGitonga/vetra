@@ -144,13 +144,13 @@ export default function ShareTransactions() {
                             </div>
                         ) : (
                             <div className="font-bold text-gray-700 dark:text-white">
-                                No Files Shared Yet
+                                No Files Shared Yet 😢
                             </div>
                         )}
                     </>
                 ) : (
                     <div className="font-bold text-gray-700 dark:text-white">
-                        No Files Shared Yet
+                        No Files Shared Yet 😢
                     </div>
                 )}
             </div>

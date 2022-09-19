@@ -33,7 +33,7 @@ export function filterRequests(requests, walletAddress, filterType) {
             );
         } else if (filterType === "receiver") {
             return (
-                item?.account?.requestAddressTo?.toString ===
+                item?.account?.requestAddressTo?.toString() ===
                 walletAddress?.toString()
             );
         }

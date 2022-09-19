@@ -6,7 +6,8 @@ import Button from "../common/PrimaryButton";
 import SelectFile from "../dialogs/SelectFile";
 import Badge from "../common/Badge";
 import useToast from "../../hooks/useToast";
-import ResponseItem from "./ResponseItem"
+import ResponseItem from "./ResponseItem";
+import useMoralisDB from "../../hooks/useMoralisDB";
 
 TimeAgo.addLocale(en);
 
@@ -16,8 +17,7 @@ export default function RequestItem({
     request,
     getReplies,
     newReply,
-    userFiles,
-    refreshMyRequests
+    refreshMyRequests,
 }) {
     const [replies, setReplies] = useState([]);
     const [showResponses, setShowResponses] = useState(false);
@@ -25,9 +25,11 @@ export default function RequestItem({
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
     const [showFileModal, setShowFileModal] = useState(false);
-    const [documentName, setDocumentName] = useState("")
-    const [documentCid, setDocumentCid] = useState("")
+    const [documentName, setDocumentName] = useState("");
+    const [documentCid, setDocumentCid] = useState("");
+    const [userFiles, setUserFiles] = useState([]);
     const toast = useToast();
+    const { getUserFiles } = useMoralisDB();
 
     const handleShowHideReplies = (show) => {
         if (!show) {
@@ -35,6 +37,11 @@ export default function RequestItem({
         }
         setShowResponses(!show);
     };
+
+    async function fetchUserFiles() {
+        let files = await getUserFiles();
+        setUserFiles(files);
+    }
 
     const fetchReplies = async () => {
         let responses = await getReplies(
@@ -49,6 +56,7 @@ export default function RequestItem({
     };
 
     const showModal = () => {
+        fetchUserFiles();
         setSelectedFile(userFiles[0]);
         setShowFileModal(true);
     };
@@ -60,9 +68,9 @@ export default function RequestItem({
         setSelectedFile(null);
     };
 
-    function addDocDetails(fileDetails){
-        setDocumentName(fileDetails?.originalName)
-        setDocumentCid(fileDetails?.fileCid)
+    function addDocDetails(fileDetails) {
+        setDocumentName(fileDetails?.originalName);
+        setDocumentCid(fileDetails?.fileCid);
     }
 
     const submitResponse = async (e) => {
@@ -74,7 +82,9 @@ export default function RequestItem({
             return;
         } else {
             try {
-                selectedFile && addDocDetails(selectedFile?.attributes)
+                if (selectedFile){
+                    addDocDetails(selectedFile?.attributes);
+                }
                 await newReply(
                     request.requestIndex,
                     request.replyCount,
@@ -82,20 +92,19 @@ export default function RequestItem({
                     documentName,
                     documentCid
                 );
-                toast("success", "Response sent successfully")
-                resetFields()
-                refreshMyRequests()
-                fetchReplies()
+                toast("success", "Response sent successfully");
+                resetFields();
+                refreshMyRequests();
+                fetchReplies();
             } catch (err) {
-                console.log(err)
+                console.log(err);
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
         }
     };
 
-    console.log(replies)
-    // console.log("selectedFile", selectedFile)
+    console.log(replies);
 
     return (
         <div className="bg-white rounded-lg border border-gray-200 shadow-md dark:bg-gray-800 dark:border-gray-700 p-4 mb-5">
@@ -150,7 +159,7 @@ export default function RequestItem({
             )}
             <div className="mt-4 flex justify-between items-center">
                 <Button
-                    text={`${showResponses ? "Show" : "Hide"} Responses`}
+                    text={`${showResponses ? "Hide" : "Show"} Responses`}
                     isWidthFull={false}
                     onClick={() => handleShowHideReplies(showResponses)}
                 />
@@ -162,12 +171,23 @@ export default function RequestItem({
                     Refresh Replies
                 </button>
             </div>
-            
-            <div className="mt-4">
-                {[...Array(2)].map((_, i) => (
-                    <ResponseItem />
-                ))}
-            </div>
+            {showResponses && (
+                <div className="mt-4">
+                    {replies.length > 0 ? (
+                        replies.map((reply) => (
+                            <ResponseItem
+                                reply={reply}
+                                key={reply.replyIndex}
+                                timeAgo={timeAgo}
+                            />
+                        ))
+                    ) : (
+                        <div className="font-bold text-gray-700 dark:text-white">
+                            No Responses yet 😢
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

@@ -22,7 +22,7 @@ export default function CreateRequest() {
         setAddressTo("");
     };
 
-    const clickSubmit = (e) => {
+    const clickSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         if (!msg || !author || !addressTo) {
@@ -30,13 +30,13 @@ export default function CreateRequest() {
             setLoading(false);
         } else {
             try {
-                newRequest(msg, author, addressTo);
-                // resetForm();
-                // toast(
-                //     "success",
-                //     "Your file request has been created, await for response from the wallet addressee"
-                // );
-                // router.push("/my_requests");
+                await newRequest(msg, author, addressTo);
+                resetForm();
+                toast(
+                    "success",
+                    "Your file request has been created, await for response from the wallet addressee"
+                );
+                router.push("/my_requests");
             } catch (err) {
                 console.log(err);
             } finally {
