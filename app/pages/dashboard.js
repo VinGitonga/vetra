@@ -5,6 +5,7 @@ import { BsFileImageFill } from "react-icons/bs";
 import { useMoralis } from "react-moralis";
 import useAuth from "../hooks/useAuth"
 import Button from "../components/common/PrimaryButton"
+import Head from "next/head"
 
 let files = [
     {
@@ -55,6 +56,10 @@ export default function Dashboard() {
     }, [hasAccount])
 
     return (
+        <>
+        <Head>
+            <title>Dashboard | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -157,6 +162,7 @@ export default function Dashboard() {
                 </div>
             </div>
         </section>
+        </>
     );
 }
 

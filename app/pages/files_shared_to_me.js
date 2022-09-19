@@ -9,6 +9,7 @@ import {
     getFileSize,
     getFileExtension,
 } from "../utils/utils";
+import Head from "next/head"
 
 export default function FilesSharedToMe() {
     const { Moralis } = useMoralis();
@@ -43,6 +44,10 @@ export default function FilesSharedToMe() {
     console.log(files);
 
     return (
+        <>
+        <Head>
+            <title>Files Shared to Me | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -127,6 +132,7 @@ export default function FilesSharedToMe() {
                 )}
             </div>
         </section>
+        </>
     );
 }
 

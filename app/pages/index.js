@@ -2,6 +2,7 @@ import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head"
 
 export default function Home() {
     const { connected } = useWallet();
@@ -15,6 +16,9 @@ export default function Home() {
 
     return (
         <>
+        <Head>
+            <title>Home | Vetra</title>
+        </Head>
             <section
                 className="w-full min-h-screen bg-white dark:bg-gray-900"
                 style={{ fontFamily: "Poppins" }}

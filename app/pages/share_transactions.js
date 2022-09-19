@@ -5,6 +5,7 @@ import TimeAgo from "javascript-time-ago";
 import en from "javascript-time-ago/locale/en.json";
 import prettyBytes from "pretty-bytes";
 import Button from "../components/common/PrimaryButton";
+import Head from "next/head"
 
 TimeAgo.addLocale(en);
 
@@ -51,6 +52,10 @@ export default function ShareTransactions() {
     console.log(files);
 
     return (
+        <>
+        <Head>
+            <title>My Files Transactions | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -155,5 +160,6 @@ export default function ShareTransactions() {
                 )}
             </div>
         </section>
+        </>
     );
 }

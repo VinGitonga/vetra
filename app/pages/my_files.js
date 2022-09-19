@@ -12,6 +12,7 @@ import {
     getFileExtension,
 } from "../utils/utils";
 import useToast from "../hooks/useToast";
+import Head from "next/head"
 
 export default function MyFiles() {
     const { Moralis } = useMoralis();
@@ -93,6 +94,10 @@ export default function MyFiles() {
     console.log(folders);
 
     return (
+        <>
+        <Head>
+            <title>My Files | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -199,6 +204,7 @@ export default function MyFiles() {
                 )}
             </div>
         </section>
+        </>
     );
 }
 

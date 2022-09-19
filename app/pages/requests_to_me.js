@@ -3,6 +3,7 @@ import RequestItem from "../components/requests/RequestItem";
 import useRequests from "../hooks/useRequests";
 import useAuth from "../hooks/useAuth";
 import Button from "../components/common/PrimaryButton";
+import Head from "next/head"
 
 export default function RequestsToMe() {
     const [requests, setRequests] = useState([]);
@@ -22,6 +23,10 @@ export default function RequestsToMe() {
 
 
     return (
+        <>
+        <Head>
+            <title>Requests Addressed to My Wallet | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -56,5 +61,6 @@ export default function RequestsToMe() {
                 </div>
             </div>
         </section>
+        </>
     );
 }

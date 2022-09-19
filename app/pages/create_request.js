@@ -5,6 +5,7 @@ import { useState } from "react";
 import useToast from "../hooks/useToast";
 import useRequests from "../hooks/useRequests";
 import { useRouter } from "next/router";
+import Head from "next/head"
 
 export default function CreateRequest() {
     const toast = useToast();
@@ -46,6 +47,10 @@ export default function CreateRequest() {
     };
 
     return (
+        <>
+        <Head>
+            <title>Create New Request | Vetra</title>
+        </Head>
         <section
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
@@ -125,6 +130,7 @@ export default function CreateRequest() {
                 </div>
             </div>
         </section>
+        </>
     );
 }
 

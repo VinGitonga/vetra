@@ -4,6 +4,7 @@ import useAuth from "../hooks/useAuth";
 import useToast from "../hooks/useToast";
 import { useRouter } from "next/router";
 import { RiLoginCircleFill } from "react-icons/ri";
+import Head from "next/head"
 
 export default function Register() {
     const [name, setName] = useState("");
@@ -46,6 +47,9 @@ export default function Register() {
 
     return (
         <>
+        <Head>
+            <title>Register | Vetra</title>
+        </Head>
             <section
                 className="w-full min-h-screen bg-white dark:bg-gray-900"
                 style={{ fontFamily: "Poppins" }}
