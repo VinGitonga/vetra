@@ -3,7 +3,6 @@ import { useMoralisQuery } from "react-moralis";
 import { useRouter } from "next/router";
 import prettyBytes from "pretty-bytes";
 import { useState } from "react";
-import FilePreview from "../../components/dialogs/FilePreview";
 import ShareFile from "../../components/dialogs/ShareFile";
 
 const getFileExtension = (filename) => filename.split(".").pop().toUpperCase();
@@ -19,11 +18,9 @@ const generateIpfsDirectUrl = (ipfsPath) => {
 
 export default function Folder() {
     const router = useRouter();
-    const [showPreview, setShowPreview] = useState(false);
     const [openShare, setOpenShare] = useState(false);
     const [fileDetailsShare, setFileDetailsShare] = useState(null);
-    const [fileUrl, setFileUrl] = useState(null);
-    const [filename, setFilename] = useState(null);
+    
     const { folderId } = router.query;
     console.log(folderId);
 
@@ -37,19 +34,7 @@ export default function Folder() {
     const { data: files } = useMoralisQuery("File", (query) =>
         query.equalTo("currentFolder", folderId)
     );
-
-    const openModal = (ipfsPath, filename) => {
-        let url = generateIpfsDirectUrl(ipfsPath);
-        setFileUrl(url);
-        setFilename(filename);
-        setShowPreview(true);
-    };
-
-    const closeModal = () => {
-        setFileUrl(null);
-        setShowPreview(false);
-    };
-
+    
     const openShareModal = (file) => {
         setFileDetailsShare(file);
         setOpenShare(true);
@@ -67,12 +52,6 @@ export default function Folder() {
             className="bg-white dark:bg-gray-900"
             style={{ fontFamily: "Poppins" }}
         >
-            <FilePreview
-                isOpen={showPreview}
-                fileUrl={fileUrl}
-                filename={filename}
-                closeModal={closeModal}
-            />
             <ShareFile
                 isOpen={openShare}
                 closeModal={closeShareModal}
@@ -150,12 +129,6 @@ export default function Folder() {
                                                 openShareModal(file)
                                             }
                                             isDisabled={false}
-                                            onClickPreview={() =>
-                                                openModal(
-                                                    file.attributes?.ipfsPath,
-                                                    file.attributes?.displayName
-                                                )
-                                            }
                                         />
                                     </td>
                                 </tr>
