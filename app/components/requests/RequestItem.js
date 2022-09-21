@@ -57,7 +57,6 @@ export default function RequestItem({
 
     const showModal = () => {
         fetchUserFiles();
-        setSelectedFile(userFiles[0]);
         setShowFileModal(true);
     };
 
@@ -69,6 +68,7 @@ export default function RequestItem({
     };
 
     function addDocDetails(fileDetails) {
+        console.log("Hiii")
         setDocumentName(fileDetails?.originalName);
         setDocumentCid(fileDetails?.fileCid);
     }
@@ -82,9 +82,13 @@ export default function RequestItem({
             return;
         } else {
             try {
+                console.log(selectedFile)
                 if (selectedFile){
-                    addDocDetails(selectedFile?.attributes);
+                    setDocumentName(selectedFile?.get("originalName"))
+                    setDocumentCid(selectedFile?.get("fileCid"))
                 }
+                console.log(documentName)
+                console.log(documentCid)
                 await newReply(
                     request.requestIndex,
                     request.replyCount,
@@ -93,9 +97,8 @@ export default function RequestItem({
                     documentCid
                 );
                 toast("success", "Response sent successfully");
-                resetFields();
-                refreshMyRequests();
-                fetchReplies();
+                setMsg("")
+                setSelectedFile(null)
             } catch (err) {
                 console.log(err);
             } finally {

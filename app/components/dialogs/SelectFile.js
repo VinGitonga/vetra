@@ -50,7 +50,7 @@ export default function SelectFile({
                                         <div className="mx-auto w-full max-w-md">
                                             <RadioGroup
                                                 value={selectedFile}
-                                                onChange={setSelectedFile}
+                                                // onChange={setSelectedFile}
                                             >
                                                 <RadioGroup.Label>
                                                     All Files
@@ -62,13 +62,12 @@ export default function SelectFile({
                                                     </div>
                                                 ) : (
                                                     <div className="space-y-2">
-                                                        {data.map((file) => (
+                                                        {data.map((file, i) => (
                                                             <RadioGroup.Option
                                                                 key={
-                                                                    file
-                                                                        ?.attributes
-                                                                        ?.displayName
+                                                                    i
                                                                 }
+                                                                onClick={() => setSelectedFile(data[i])}
                                                                 value={file}
                                                                 className={({
                                                                     active,
