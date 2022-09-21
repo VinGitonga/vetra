@@ -99,7 +99,7 @@ export default function Dashboard() {
                         </div>
                     ) : (
                         <div className="font-bold text-gray-700 dark:text-white mt-2 text-xl">
-                            You haven't created any folder yet! 😢 Create One 😂
+                            You haven&apos;t created any folder yet! 😢 Create One 😂
                         </div>
                     )}
                     <h2 className="text-sm font-semibold text-gray-800 capitalize lg:text-xl dark:text-white mt-8 mb-4">

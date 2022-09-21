@@ -73,7 +73,7 @@ export default function AllFolders(){
                         </div>
                     ) : (
                         <div className="font-bold text-gray-700 dark:text-white mt-2 text-xl">
-                            You haven't created any folder yet! 😢 Create One 😂
+                            You haven&apos;t created any folder yet! 😢 Create One 😂
                         </div>
                     )}
                 </div>
