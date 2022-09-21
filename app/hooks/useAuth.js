@@ -25,13 +25,23 @@ const useAuth = () => {
     const [authUser, setAuthUser] = useState(null);
     const [hasAccount, setHasAccount] = useState(false);
 
+    /**
+     * 
+     * @param {*} name Name of the user being registered to Vetra Cloud Service
+     * @param {*} email Email address of the user being registered to Vetra Cloud
+     */
+
     const signup = async (name, email) => {
+
+        /**
+         * Get the program derived address 
+         */
         let [user_pda] = await anchor.web3.PublicKey.findProgramAddress(
             [utf8.encode("user"), wallet.publicKey.toBuffer()],
             program.programId
         );
 
-        // create the user account on solana
+        // create the user account on solana by accessing createUser function from the Solana Smart Contracts that have been deployed and passing in the parameters
         const tx = await program.rpc
             .createUser(name, email, {
                 accounts: {
@@ -42,9 +52,15 @@ const useAuth = () => {
             })
 
         console.log(tx)
-        const userInfo = await program.account.userAccount.fetch(user_pda);
+        const userInfo = await program.account.userAccount.fetch(user_pda); // check if the user has been registered successfully
         console.log(userInfo)
     };
+
+    /**
+     * This method checks whether the connected wallet has an account with Vetra Cloud
+     * If User has account it sets hasAccount=true otherwise false
+     * Therefore hasAccount is used together with authUser since they are co-dependent
+     */
 
     const checkAccount = async () => {
         let [user_pda] = await anchor.web3.PublicKey.findProgramAddress(
@@ -64,6 +80,10 @@ const useAuth = () => {
             setHasAccount(false); // set to false as no account found
         }
     };
+
+    /**
+     * Run the side effects once the wallet is connected
+     */
 
     useEffect(() => {
         if (wallet.connected) {

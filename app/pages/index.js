@@ -43,18 +43,7 @@ export default function Home() {
                             </p>
 
                             <div className="flex flex-col mt-8 space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0">
-                                <WalletMultiButton />
-                                {/* <button
-                                    onClick={() =>
-                                        authenticate({ type: "sol" })
-                                    }
-                                    // disabled={isA}
-                                    className="px-8 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-md hover:bg-blue-600 focus:bg-blue-600 focus:outline-none sm:mx-2"
-                                >
-                                    {isAuthenticated
-                                        ? "Proceed to Dashboard"
-                                        : "Get Started"}
-                                </button> */}
+                                <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
                             </div>
                         </div>
                     </section>

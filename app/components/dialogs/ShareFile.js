@@ -1,14 +1,18 @@
 import { Dialog, Transition } from "@headlessui/react";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 import useToast from "../../hooks/useToast";
 import PrimaryButton from "../common/PrimaryButton";
 import useShare from "../../hooks/useShare";
 import { BsFillFileTextFill } from "react-icons/bs";
 import RadioButton from "../common/RadioButton";
 import { useMoralis } from "react-moralis";
+import { ModalContext } from "../../context/ShareModalContext"
 
-export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
+
+export default function ShareFile() {
+    const { modalOpen, setModalOpen, fileDetails, setFileDetails } = useContext(ModalContext)
     const { Moralis } = useMoralis();
+    const { newFileShare } = useShare();
     const toast = useToast(5000);
     const [shareType, setShareType] = useState("wallet");
     const handleShareTypeWalletChange = () => setShareType("wallet");
@@ -21,8 +25,13 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
         setEmail("");
         setWalletAddress("");
         setShareType("wallet");
-        setIsOpen(false);
+        setFileDetails(null)
+        setModalOpen(false);
     };
+
+    const closeModal = () => {
+        resetForm()
+    }
 
     function getAddress(shareType) {
         switch (shareType) {
@@ -35,10 +44,10 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
         }
     }
 
-    const { newFileShare } = useShare();
+    
 
 
-    function updateFile(fileId, address) {
+    async function updateFile(fileId, address) {
         const File = Moralis.Object.extend("File");
         const query = new Moralis.Query(File);
 
@@ -65,19 +74,19 @@ export default function ShareFile({ isOpen, closeModal, file, setIsOpen }) {
             toast("error", "Paste in the email address");
         } else {
             newFileShare(
-                file.id,
-                file.attributes.displayName,
-                file.attributes.ipfsPath,
+                fileDetails.id,
+                fileDetails.attributes.displayName,
+                fileDetails.attributes.ipfsPath,
                 getAddress(shareType),
-                file.attributes.size
+                fileDetails.attributes.size
             );
-            updateFile(file.id, getAddress(shareType))
+            await updateFile(fileDetails.id, getAddress(shareType))
         }
     };
 
     return (
         <>
-            <Transition appear show={isOpen} as={Fragment}>
+            <Transition appear show={modalOpen} as={Fragment}>
                 <Dialog as="div" className="relative z-10" onClose={closeModal}>
                     <Transition.Child
                         as={Fragment}

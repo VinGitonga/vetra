@@ -2,7 +2,6 @@ import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { SOLANA_HOST } from "../utils/constants";
 import { getProgramInstance } from "../utils/utils";
-import { useMoralisQuery } from "react-moralis";
 
 const anchor = require("@project-serum/anchor");
 const utf8 = anchor.utils.bytes.utf8;
@@ -15,11 +14,25 @@ const defaultAccount = {
     systemProgram: SystemProgram.programId,
 };
 
-const useShare = (setMsgType, setMsg) => {
+/**
+ * Custom Hook that provides file sharing function and fetching all files shared
+ * @returns newFileShare, fetchMyTransactions
+ */
+
+const useShare = () => {
     const wallet = useWallet();
     const connection = new anchor.web3.Connection(SOLANA_HOST);
     const program = getProgramInstance(connection, wallet);
     
+
+    /**
+     * 
+     * @param {*} file_id id of the file in Moralis DB
+     * @param {*} filename Name of the file being shared
+     * @param {*} ipfs_path Path of the File in IPFS
+     * @param {*} sent_to address (email, wallet) where its being sent
+     * @param {*} file_size Size of the file being sent(Shared)
+     */
 
     const newFileShare = async (
         file_id,
@@ -86,6 +99,11 @@ const useShare = (setMsgType, setMsg) => {
     
 
     };
+
+    /**
+     * This function retrieves all transactions used for sharing files between wallet or email addresses
+     * @returns transactions[]
+     */
 
     const fetchMyShareTransactions = async () => {
         const allShares = await program.account.shareAccount.all();

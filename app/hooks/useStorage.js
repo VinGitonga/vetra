@@ -4,6 +4,10 @@ import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
 import prettyBytes from "pretty-bytes";
 
+/**
+ * Custom Hook that facilitates Upload of documents and files on Decentralized Storage Web3.Storage
+ */
+
 const useStorage = (
     setMsg,
     setMsgType,
@@ -15,7 +19,12 @@ const useStorage = (
     const wallet = useWallet();
     const client = makeStorageClient();
     const [folderObj, setFolderObj] = useState(null);
-    const [ipfsFiles, setIpfsFiles] = useState([]);
+
+    /**
+     * Method that retrieves details of files sent to Web3.Storage after upload in order to get details and save them to Moralis Database
+     * @param {*} cid of all files sent to IPFS
+     * @returns Array[] -- All details of files sent
+     */
 
     async function retrieveFiles(cid) {
         let allFiles = [];
@@ -26,6 +35,7 @@ const useStorage = (
             console.log(`Got a response! [${res.status}] ${res.statusText}`);
 
             if (!res.ok) {
+                setProgressMsg("An error was encountered 😢, Please Try again!")
                 throw new Error(
                     `Failed to get ${cid} - [${res.status}] ${res.statusText}`
                 );
@@ -45,9 +55,14 @@ const useStorage = (
             console.log(err);
         }
         console.log(allFiles);
-        setIpfsFiles(allFiles);
         return allFiles
     }
+
+    /**
+     * This function facilitates the upload of files to Web3.Storage and saving its details Moralis Database
+     * @param {*} files Array of files being uploaded
+     * @param {*} folderId Id of the folder to save files into
+     */
 
     const uploadFiles = async (files,
         folderId) => {
@@ -55,10 +70,11 @@ const useStorage = (
 
         const cid = await client.put(files, {
             onRootCidReady: (localCid) => {
+                console.log(localCid)
                 setProgressMsg(
-                    `> 🔑 locally calculated Content ID: ${localCid} `
+                    `> 🔑 Calculating Storage ID `
                 );
-                setProgressMsg("> 📡 sending files to web3.storage ");
+                setProgressMsg("> 📡 sending files to Decentralized Storage ");
             },
 
             // onStoredChunk is called after each chunk of data is uploaded
@@ -66,12 +82,13 @@ const useStorage = (
                 setProgressMsg(
                     `> 🛰 sent ${prettyBytes(parseInt(bytes))} / ${prettyBytes(
                         parseInt(totalSize)
-                    )} to web3.storage`
+                    )} to Decentralized Storage`
                 ),
         });
 
         getFolderForUpdate(folderId);
         setProgressMsg("Saving Details ...")
+        // Saving files details on Moralis By first retrieving details from Web3.Storage and then saving on Moralis Database
         await (await retrieveFiles(cid.toString())).forEach(async (item) => {
             let ipfsPath = `${cid.toString()}/${item.name}`;
             let data = {
@@ -105,39 +122,12 @@ const useStorage = (
             });
         });
 
-        // (await ipfsFiles).forEach(async (item) => {
-        //     let ipfsPath = `${cid.toString()}/${item.name}`;
-        //     let data = {
-        //         originalName: item.name,
-        //         displayName: item.name,
-        //         size: item.size,
-        //         initFolder: folderId,
-        //         currentFolder: folderId,
-        //         parentCid: cid.toString(),
-        //         ipfsPath: ipfsPath,
-        //         fileCid: item.cid.toString(),
-        //         owner: wallet.publicKey.toString(),
-        //         allowedAddresses: [wallet.publicKey.toString()],
-        //     };
-        //     saveFile(data, {
-        //         onSuccess: async (file) => {
-        //             console.log(file);
-        //             file.set("currentParentFolder", folderObj);
-        //             await file.save();
-        //             setMsg(`${data.originalName} Uploaded successfully`);
-        //             setMsgType("success");
-        //             resetFields();
-        //         },
-        //         onError: (err) => {
-        //             console.log(err);
-        //             setMsg(
-        //                 `An error was encountured while uploading ${data.originalName}`
-        //             );
-        //             setMsgType("error");
-        //         },
-        //     });
-        // });
+       
     };
+
+    /**
+     * This method retrieves the folder and saves the folder to File and a child (embended Object)
+     */
 
     async function getFolderForUpdate(folderId) {
         const Folder = Moralis.Object.extend("Folder");

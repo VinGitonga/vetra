@@ -32,7 +32,7 @@ export default function Navbar() {
                     </span>
                 </a>
                 {!wallet.connected ? (
-                    <WalletMultiButton />
+                    <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
                 ) : (
                     <div className="flex items-center md:order-2">
                         <Menu
@@ -41,7 +41,7 @@ export default function Navbar() {
                         >
                             <div className="flex items-center justify-between">
                                 <div className="mr-2">
-                                    <WalletMultiButton />
+                                    <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
                                 </div>
                                 <Menu.Button className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                                     <img

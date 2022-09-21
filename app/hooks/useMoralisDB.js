@@ -13,6 +13,10 @@ const useMoralisDB = () => {
     const wallet = useWallet();
     const { hasAccount, authUser } = useAuth()
 
+    /**
+     * Create new Folder and save its details on Moralis Database
+     */
+
     async function createFolder(displayName) {
         if (!wallet.connected) {
             toast("error", "Connect your wallet first to create folder");
@@ -28,6 +32,9 @@ const useMoralisDB = () => {
             allowedAddresses: [],
         };
 
+        /**
+         * After getting folderInfo then save on db and show success or error messages respectively
+         */
         saveNewFolder(data, {
             onSuccess: (folder) => {
                 console.log(folder);
@@ -44,6 +51,10 @@ const useMoralisDB = () => {
         return { msg, msgType };
     }
 
+    /**
+     * This function retrieves details of all files that belong to the logged in user and returns an array
+     * @returns files[]
+     */
 
     async function getUserFiles(){
         let files = []

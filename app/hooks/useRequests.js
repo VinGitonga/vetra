@@ -108,6 +108,15 @@ const useRequests = () => {
         console.log(tx);
     };
 
+    /**
+     * This function sends a new reply to a File message request and may or maynot include a file document
+     * @param {*} index Request index of current Request item
+     * @param {*} count The no of responses in the Request Item
+     * @param {*} msgTxt The text message to be sent as a response
+     * @param {*} document_name name of file being sent
+     * @param {*} document_cid Content Identifier of the file being sent or shared so that the recipient party can easily download or save to their files
+     */
+
     const newReply = async (
         index,
         count,
@@ -115,12 +124,10 @@ const useRequests = () => {
         document_name,
         document_cid
     ) => {
-        console.log(index);
-        console.log(count);
-        console.log("msg", msgTxt);
-        console.log("author", authUser?.name);
+       
         console.log("docname", document_name);
         console.log("doccid", document_cid);
+        // fetch the request program derived address in order to make it easier to retrieve each and every request
         let [request_pda] = await anchor.web3.PublicKey.findProgramAddress(
             [
                 utf8.encode("request"),
@@ -129,6 +136,7 @@ const useRequests = () => {
             program.programId
         );
 
+        // get reply pda instance in order to sent the new response
         let [reply_pda] = await anchor.web3.PublicKey.findProgramAddress(
             [
                 utf8.encode("reply"),
@@ -138,6 +146,7 @@ const useRequests = () => {
             program.programId
         );
 
+        // Start the new response transaction using the current request item instance and reply and sign transaction
         const tx = await program.rpc.createReply(
             msgTxt,
             authUser?.name,
@@ -156,9 +165,17 @@ const useRequests = () => {
         console.log(tx);
     };
 
+    /**
+     * 
+     * @param {*} index The Request Index
+     * @param {*} count The no of responses in the current Request instance
+     * @returns replies[] -- Array of all response for a given Request
+     */
+
     const getReplies = async (index, count) => {
         let replySigners = [];
 
+        // fetch all responses signers and save them in array 
         for (let i = 0; i < count; i++) {
             let [replySigner] = await anchor.web3.PublicKey.findProgramAddress(
                 [
@@ -171,6 +188,8 @@ const useRequests = () => {
 
             replySigners.push(replySigner);
         }
+
+        // fetch all responses for a given request item and filter them also.
 
         const replies = await program.account.replyAccount.fetchMultiple(
             replySigners
