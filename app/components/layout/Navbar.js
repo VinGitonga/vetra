@@ -1,17 +1,26 @@
-import { Fragment } from "react";
+import { Fragment, useCallback } from "react";
 import { Menu, Transition } from "@headlessui/react";
 import { FiUser } from "react-icons/fi";
 import { FaUserCheck } from "react-icons/fa";
 import { AiOutlineLogout } from "react-icons/ai";
 import { useRouter } from "next/router";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import {
+    WalletDisconnectButton,
+    WalletMultiButton,
+} from "@solana/wallet-adapter-react-ui";
 import { useWallet } from "@solana/wallet-adapter-react";
 import useAuth from "../../hooks/useAuth";
+import Button from "../common/PrimaryButton";
 
 export default function Navbar() {
+    const { connected } = useWallet();
     const router = useRouter();
-    const wallet = useWallet();
-    const { hasAccount, authUser } = useAuth();
+    const { hasAccount, authUser, setHasAccount } = useAuth();
+    const logout = useCallback(async () => {
+        setHasAccount(false)
+        router.push('/')
+    })
+    
     return (
         <nav
             className="bg-white border-gray-200 lg:px-16 sm:px-4 py-2.5 rounded dark:bg-gray-900 sticky top-0 z-50"
@@ -31,17 +40,39 @@ export default function Navbar() {
                         Vetra
                     </span>
                 </a>
-                {!wallet.connected ? (
-                    <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
+                {!connected ? (
+                    <>
+                        <WalletMultiButton
+                            style={{ backgroundColor: "#512da8" }}
+                        />
+                    </>
+                ) : !hasAccount ? (
+                    <div>
+                        <Button
+                            text={"Register"}
+                            isWidthFull={false}
+                            onClick={() => router.push("/register")}
+                        />
+                        <WalletDisconnectButton
+                            style={{ backgroundColor: "#512da8" }}
+                            onClick={logout}
+                        />
+                    </div>
                 ) : (
-                    <div className="flex items-center md:order-2">
+                    <div className="ml-2 flex items-center md:order-2">
                         <Menu
                             as="div"
                             className="relative inline-block text-left"
                         >
                             <div className="flex items-center justify-between">
-                                <div className="mr-2">
-                                    <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
+                                <div className="flex items-center space-x-4">
+                                    <WalletMultiButton
+                                        style={{ backgroundColor: "#512da8" }}
+                                    />
+                                    <WalletDisconnectButton
+                                        style={{ backgroundColor: "#512da8" }}
+                                        onClick={logout}
+                                    />
                                 </div>
                                 <Menu.Button className="flex mr-3 text-sm bg-gray-800 rounded-full md:mr-0 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-600">
                                     <img

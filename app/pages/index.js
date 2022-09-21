@@ -1,18 +1,19 @@
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { useWallet } from "@solana/wallet-adapter-react";
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head"
+import useAuth from "../hooks/useAuth"
+import Button from "../components/common/PrimaryButton"
 
 export default function Home() {
-    const { connected } = useWallet();
+    const { hasAccount } = useAuth()
     const router = useRouter();
 
     useEffect(() => {
-        if (connected) {
+        if (hasAccount) {
             router.push("/dashboard");
         }
-    }, [connected]);
+    }, [hasAccount]);
 
     return (
         <>
@@ -42,8 +43,9 @@ export default function Home() {
                                 Moralis and Web3.Storage.
                             </p>
 
-                            <div className="flex flex-col mt-8 space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0">
+                            <div className="flex flex-col mt-8 space-y-3 sm:-mx-2 sm:flex-row sm:justify-center sm:space-y-0 space-x-4">
                                 <WalletMultiButton style={{ backgroundColor: "#512da8" }} />
+                                {!hasAccount && <Button text={"Create an Account"} onClick={() => router.push('/register')} isWidthFull={false} /> }
                             </div>
                         </div>
                     </section>
