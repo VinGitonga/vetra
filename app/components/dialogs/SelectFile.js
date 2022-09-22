@@ -62,7 +62,7 @@ export default function SelectFile({
                                                     </div>
                                                 ) : (
                                                     <div className="space-y-2">
-                                                        {data.map((file, i) => (
+                                                        {data?.map((file, i) => (
                                                             <RadioGroup.Option
                                                                 key={
                                                                     i
