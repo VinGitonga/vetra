@@ -27,7 +27,7 @@ const FileCard = ({ file }) => {
     async function downloadFile() {
         try {
             const resp = await axios.get(
-                `https://${file.fileCid}.ipfs.w3s.link`,
+                `https://${file.attributes.fileCid}.ipfs.w3s.link`,
                 {
                     responseType: "blob",
                     headers: {
@@ -89,8 +89,8 @@ const FileCard = ({ file }) => {
                 </div>
                 <div className="flex items-center w-12">
                     <FileIcon
-                        extension={getFileExtension(file?.displayName)}
-                        {...defaultStyles[getFileExtension(file?.displayName)]}
+                        extension={getFileExtension(file?.attributes?.displayName)}
+                        {...defaultStyles[getFileExtension(file?.attributes?.displayName)]}
                         labelUppercase={true}
                     />
                 </div>
@@ -100,12 +100,12 @@ const FileCard = ({ file }) => {
                 <div className="font-medium dark:text-white space-y-2">
                     <div className="text-xs">{file?.displayName}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {file?.currentParentFolder?.attributes?.displayName ||
-                            getSlicedAddress(file?.currentFolder)}{" "}
-                        • {getFileSize(file?.size)}
+                        {file?.attributes?.currentParentFolder?.attributes?.displayName ||
+                            getSlicedAddress(file?.attributes?.currentFolder)}{" "}
+                        • {getFileSize(file?.attributes?.size)}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {getSlicedAddress(file?.owner)}
+                        {getSlicedAddress(file?.attributes?.owner)}
                     </div>
                 </div>
             </div>

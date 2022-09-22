@@ -73,6 +73,7 @@ export default function ShareFile() {
         } else if (shareType === "email" && !email) {
             toast("error", "Paste in the email address");
         } else {
+            console.log(fileDetails)
             newFileShare(
                 fileDetails.id,
                 fileDetails.attributes.displayName,

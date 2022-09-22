@@ -108,7 +108,7 @@ export default function Dashboard() {
 
                     {files.length > 0 ? (
                         <div className="grid grid-cols-1 gap-8 xl:gap-12 md:grid-cols-4 mb-4">
-                            {files.map(({ attributes: file }, i) => (
+                            {files.map((file, i) => (
                                 <FileCard file={file} key={files[i].id} />
                             ))}
                         </div>
