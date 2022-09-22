@@ -3,17 +3,13 @@ import { makeStorageClient } from "../utils/storage";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
 import prettyBytes from "pretty-bytes";
+import { create } from "ipfs-http-client";
 
 /**
  * Custom Hook that facilitates Upload of documents and files on Decentralized Storage Web3.Storage
  */
 
-const useStorage = (
-    setMsg,
-    setMsgType,
-    resetFields,
-    setProgressMsg
-) => {
+const useStorage = (setMsg, setMsgType, resetFields, setProgressMsg) => {
     const { save: saveFile } = useNewMoralisObject("File");
     const { Moralis } = useMoralis();
     const wallet = useWallet();
@@ -28,14 +24,15 @@ const useStorage = (
 
     async function retrieveFiles(cid) {
         let allFiles = [];
-        const client = makeStorageClient();
         try {
             const res = await client.get(cid).catch((err) => console.log(err));
 
             console.log(`Got a response! [${res.status}] ${res.statusText}`);
 
             if (!res.ok) {
-                setProgressMsg("An error was encountered 😢, Please Try again!")
+                setProgressMsg(
+                    "An error was encountered 😢, Please Try again!"
+                );
                 throw new Error(
                     `Failed to get ${cid} - [${res.status}] ${res.statusText}`
                 );
@@ -55,7 +52,7 @@ const useStorage = (
             console.log(err);
         }
         console.log(allFiles);
-        return allFiles
+        return allFiles;
     }
 
     /**
@@ -64,32 +61,30 @@ const useStorage = (
      * @param {*} folderId Id of the folder to save files into
      */
 
-    const uploadFiles = async (files,
-        folderId) => {
-        let totalSize = files?.map((f) => f.size).reduce((a, b) => a + b, 0);
+    const uploadFiles = async (files, folderId) => {
+        let totalSize = files.map((f) => f.size).reduce((a, b) => a + b, 0);
+        let uploaded = 0;
+        const onRootCidReady = (cid) => {
+            console.log(`Uploading files with cid: ${cid}`);
+        };
 
-        const cid = await client.put(files, {
-            onRootCidReady: (localCid) => {
-                console.log(localCid)
-                setProgressMsg(
-                    `> 🔑 Calculating Storage ID `
-                );
-                setProgressMsg("> 📡 sending files to Decentralized Storage ");
-            },
+        const onStoredChunk = (size) => {
+            uploaded += size;
+            const pct = Math.floor(100 * (uploaded / totalSize));
+            setProgressMsg(`Uploading ... ${pct}`);
+            console.log(`Uploading ... ${pct}`);
+        };
 
-            // onStoredChunk is called after each chunk of data is uploaded
-            onStoredChunk: (bytes) =>
-                setProgressMsg(
-                    `> 🛰 sent ${prettyBytes(parseInt(bytes))} / ${prettyBytes(
-                        parseInt(totalSize)
-                    )} to Decentralized Storage`
-                ),
-        });
+        const cid = await client.put(files, { onRootCidReady, onStoredChunk });
+        console.log(cid.toString());
 
         getFolderForUpdate(folderId);
-        setProgressMsg("Saving Details ...")
+        setProgressMsg("Saving Details ...");
+        let allLinks = getLinks(cid.toString());
+        // console.log(allLinks);
+
         // Saving files details on Moralis By first retrieving details from Web3.Storage and then saving on Moralis Database
-        await (await retrieveFiles(cid.toString())).forEach(async (item) => {
+        (await allLinks).forEach(async (item) => {
             let ipfsPath = `${cid.toString()}/${item.name}`;
             let data = {
                 originalName: item.name,
@@ -109,6 +104,7 @@ const useStorage = (
                     file.set("currentParentFolder", folderObj);
                     await file.save();
                     setMsg(`${data.originalName} Uploaded successfully`);
+                    setProgressMsg(`${data.originalName} Uploaded successfully`);
                     setMsgType("success");
                     resetFields();
                 },
@@ -121,8 +117,6 @@ const useStorage = (
                 },
             });
         });
-
-       
     };
 
     /**
@@ -137,6 +131,28 @@ const useStorage = (
             (folder) => setFolderObj(folder),
             (error) => console.log(error)
         );
+    }
+
+    async function getLinks(ipfsPath) {
+        const url = "https://dweb.link/api/v0";
+        const ipfs = create({ url });
+        // console.log(ipfs)
+
+        let links = [];
+        try {
+            for await (const link of ipfs.ls(ipfsPath)) {
+                links.push(link);
+            }
+        } catch (err) {
+            console.log(err);
+            setProgressMsg(
+                `An error was encountered while uploading, try again uploading. Just Click Upload again`
+            );
+        }
+
+        console.log(links);
+        // console.log(prettyBytes(links[0].size))
+        return links;
     }
 
     return { uploadFiles };
