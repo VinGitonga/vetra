@@ -37,9 +37,8 @@ export default function ShareTransactions() {
         );
         return newFiles.sort(
             (a, b) =>
-                b.account.shareTime.toNumber() -
-                a -
-                account.shareTime.toNumber()
+                b?.account?.shareTime?.toNumber() -
+                a?.account?.shareTime?.toNumber()
         );
     };
 
