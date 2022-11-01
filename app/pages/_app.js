@@ -1,6 +1,6 @@
+import "@solana/wallet-adapter-react-ui/styles.css";
 import "../styles/globals.css";
 import "@fontsource/poppins";
-import "@solana/wallet-adapter-react-ui/styles.css";
 import { ContextProviderWallet } from "../context/ContextProviderWallet";
 import ToastContainer from "../components/common/ToastContainer";
 import Layout from "../components/layout";

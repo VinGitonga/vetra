@@ -21,6 +21,8 @@ export default function Folder() {
         [folderId]
     );
 
+    console.log(files)
+
     return (
         <section
             className="bg-white dark:bg-gray-900"
@@ -35,9 +37,10 @@ export default function Folder() {
                 </h2>
                 {files.length > 0 ? (
                     <div className="grid grid-cols-1 gap-8 xl:gap-12 md:grid-cols-4 mb-4">
-                        {files.map(({ attributes: file }, i) => (
-                            <FileCard file={file} key={files[i].id} />
+                        {files.map((fileItem) => (
+                            <FileCard file={fileItem} key={fileItem?.id} />
                         ))}
+                        
                     </div>
                 ) : (
                     <div className="font-bold text-gray-700 dark:text-white mt-2">

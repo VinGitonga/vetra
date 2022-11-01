@@ -100,8 +100,7 @@ const FileCard = ({ file }) => {
                 <div className="font-medium dark:text-white space-y-2">
                     <div className="text-xs">{file?.displayName}</div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
-                        {file?.attributes?.currentParentFolder?.attributes?.displayName ||
-                            getSlicedAddress(file?.attributes?.currentFolder)}{" "}
+                        {file?.attributes?.displayName}{" "}
                         • {getFileSize(file?.attributes?.size)}
                     </div>
                     <div className="text-xs text-gray-500 dark:text-gray-400">
